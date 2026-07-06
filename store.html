@@ -479,7 +479,7 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      padding: 24px;
+      padding: 24px 24px 100px 24px;
       box-sizing: border-box;
       z-index: 3;
       color: #ffffff !important;
@@ -516,14 +516,21 @@
     }
     
     .swipe-actions {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
       display: flex;
       gap: 32px;
       align-items: center;
       justify-content: center;
       width: 100%;
+      pointer-events: none;
     }
     
     .swipe-btn {
+      pointer-events: auto;
       width: 60px;
       height: 60px;
       border-radius: 50%;
@@ -533,12 +540,41 @@
       justify-content: center;
       font-size: 1.4rem;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       transition: transform 0.2s ease;
     }
 
     .swipe-btn:active {
       transform: scale(0.9);
+    }
+
+    .swipe-category-overlay-wrapper {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 100;
+    }
+
+    .swipe-category-overlay-wrapper select {
+      background-color: rgba(0, 0, 0, 0.6) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border-radius: var(--radius-md) !important;
+      padding: 10px 16px !important;
+      font-size: 0.9rem !important;
+      font-family: inherit;
+      font-weight: 600 !important;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+      outline: none;
+    }
+
+    .swipe-category-overlay-wrapper select option {
+      background-color: #1e293b;
+      color: #ffffff;
     }
 
     .swipe-btn-nope {
@@ -658,6 +694,13 @@
 
     <!-- Swipe Tinder Mode Container -->
     <div id="store-swipe-view" class="swipe-container" style="display: none;">
+      <!-- Category select overlay on card -->
+      <div class="swipe-category-overlay-wrapper" id="swipe-category-select-wrapper">
+        <select id="swipe-category-select" class="form-control" onchange="selectMobileCategory(this.value)">
+          <!-- populated dynamically -->
+        </select>
+      </div>
+
       <div class="swipe-card-stack" id="swipe-card-stack">
         <!-- Renders swipe card here dynamically -->
       </div>
@@ -809,6 +852,19 @@
           mobileSelect.appendChild(opt);
         });
         mobileSelect.value = activeCategory;
+      }
+
+      // 3. Populate Swipe overlay select dropdown
+      const swipeSelect = document.getElementById("swipe-category-select");
+      if (swipeSelect) {
+        swipeSelect.innerHTML = "";
+        categories.forEach(cat => {
+          const opt = document.createElement("option");
+          opt.value = cat;
+          opt.textContent = cat === "all" ? "Filtrar por Categoria (Todas)" : cat;
+          swipeSelect.appendChild(opt);
+        });
+        swipeSelect.value = activeCategory;
       }
     }
 
@@ -1264,6 +1320,11 @@
       const badgeNope = card.querySelector(".swipe-badge-nope");
 
       function startDrag(e) {
+        // If the user clicks on select, button, icons, video player or any interactive controls overlay, ignore drag gesture
+        const tag = e.target.tagName.toLowerCase();
+        if (tag === "select" || tag === "button" || tag === "i" || e.target.closest("select") || e.target.closest("button") || e.target.closest(".swipe-actions")) {
+          return;
+        }
         isDraggingCard = true;
         const clientX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
         const clientY = e.type.includes("touch") ? e.touches[0].clientY : e.clientY;
@@ -1483,11 +1544,11 @@
       
       if (categoryTabs && mobileWrapper) {
         if (activeLayout === "swipe") {
-          // Swipe Tinder mode forces category select dropdown sticky at the top
+          // Swipe Tinder mode uses an absolute overlay select inside the card, hiding the standard wrappers
           categoryTabs.classList.add("mobile-tabs-hidden");
           categoryTabs.classList.remove("mobile-footer-active");
-          mobileWrapper.classList.add("mobile-dropdown-active");
-          mobileWrapper.classList.add("swipe-category-sticky");
+          mobileWrapper.classList.remove("mobile-dropdown-active");
+          mobileWrapper.classList.remove("swipe-category-sticky");
           mobileWrapper.classList.remove("mobile-footer-dropdown-active");
           document.body.classList.remove("mobile-footer-padding");
         } else {
