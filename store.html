@@ -641,6 +641,182 @@
     body.cart-open .mobile-category-select-wrapper.mobile-footer-dropdown-active {
       display: none !important;
     }
+    /* Header icon button styles */
+    .header-icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      padding: 0;
+    }
+    .header-icon-btn:hover {
+      background-color: var(--bg-primary);
+      color: var(--accent-primary);
+    }
+    .user-avatar-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent-primary);
+    }
+
+    /* Search Overlay Styles */
+    .store-search-overlay {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      box-sizing: border-box;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: center;
+      animation: searchSlideDown 0.2s ease-out;
+    }
+    @keyframes searchSlideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .search-overlay-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      gap: 12px;
+    }
+    .search-overlay-container input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-overlay-container input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px hsla(78, 80%, 35%, 0.15);
+    }
+    .search-input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+    .search-overlay-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .search-overlay-close-btn:hover {
+      background-color: var(--bg-primary);
+      color: var(--color-danger);
+    }
+
+    /* Auth modal specifics */
+    .auth-modal-content {
+      text-align: center;
+      padding: 12px 8px;
+    }
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 12px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      margin: 20px 0 12px 0;
+      outline: none;
+    }
+    .btn-google:hover {
+      background-color: var(--bg-secondary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+    .user-profile-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 24px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      width: 220px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: dropdownFadeIn 0.2s ease;
+    }
+    @keyframes dropdownFadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-profile-dropdown-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+    .user-profile-dropdown-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-profile-dropdown-email {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
 </head>
 <body>
@@ -654,9 +830,21 @@
       <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
       <div class="logo-text">Rancho Orgânico</div>
     </a>
-    <div style="display: flex; gap: 16px; align-items: center;">
+    <div style="display: flex; gap: 12px; align-items: center;">
       <!-- Link to ERP for convenience -->
-      <a href="index.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-building-columns"></i> Ir ao Painel Admin</a>
+      <a href="index.html" class="btn btn-secondary btn-sm hide-mobile"><i class="fa-solid fa-building-columns"></i> Ir ao Painel Admin</a>
+      
+      <!-- Search Toggle Button -->
+      <button class="header-icon-btn" onclick="toggleSearchOverlay(true)" title="Pesquisar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+
+      <!-- User Profile Button -->
+      <button class="header-icon-btn" id="user-profile-btn" onclick="toggleUserDropdown()" title="Minha Conta">
+        <i class="fa-solid fa-circle-user"></i>
+      </button>
+
+      <!-- Cart Button -->
       <button class="cart-bag-btn" onclick="toggleCart(true)">
         <i class="fa-solid fa-bag-shopping"></i>
         <span>Sacola</span>
@@ -664,6 +852,26 @@
       </button>
     </div>
   </header>
+
+  <!-- Search Overlay Banner -->
+  <div class="store-search-overlay" id="store-search-overlay" style="display: none;">
+    <div class="search-overlay-container">
+      <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+      <input type="search" id="store-search-input" placeholder="O que você está procurando hoje? (ex: alface, banana, mel...)" oninput="renderStoreProducts()">
+      <button class="search-overlay-close-btn" onclick="toggleSearchOverlay(false)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- User Profile Dropdown (floating) -->
+  <div class="user-profile-dropdown" id="user-profile-dropdown" style="display: none;">
+    <div class="user-profile-dropdown-header">
+      <div class="user-profile-dropdown-name" id="dropdown-user-name">Carregando...</div>
+      <div class="user-profile-dropdown-email" id="dropdown-user-email">email@exemplo.com</div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="handleSignOut()" style="width: 100%; border-color: var(--color-danger); color: var(--color-danger); margin-top: 4px;"><i class="fa-solid fa-right-from-bracket"></i> Sair da Conta</button>
+  </div>
 
   <!-- Hero Header banner -->
   <div class="store-hero" id="store-hero">
@@ -682,9 +890,6 @@
           <!-- populated dynamically -->
         </select>
       </div>
-      <search style="max-width: 300px; width: 100%;">
-        <input type="search" id="store-search-input" class="input-search" placeholder="Pesquisar frutas, legumes..." oninput="renderStoreProducts()">
-      </search>
     </div>
 
     <!-- Products Grid -->
@@ -798,11 +1003,46 @@
     </div>
   </dialog>
 
+  <!-- Authentication Dialog (Firebase / Google Login) -->
+  <dialog id="auth-dialog" style="border: none; border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-dark); max-width: 340px; width: 90%; background-color: var(--bg-secondary); color: var(--text-primary); outline: none;">
+    <div style="position: relative;">
+      <button onclick="closeAuthModal()" style="position: absolute; right: -8px; top: -8px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+      <div class="auth-modal-content">
+        <div class="auth-brand">
+          <i class="fa-solid fa-leaf"></i>
+          <span>Rancho Orgânico</span>
+        </div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 8px; font-family: 'Outfit', sans-serif; color: var(--text-primary);">Acesse sua Conta</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Faça login para salvar seus pedidos, favoritar itens e comprar com mais facilidade.</p>
+        
+        <!-- Google Sign-In Button -->
+        <button class="btn-google" onclick="handleGoogleSignIn()">
+          <img src="https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?auto=format&fit=crop&q=80&w=40" alt="Google Logo">
+          Entrar com o Google
+        </button>
+        
+        <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+          Conectado com segurança via Firebase Auth
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Database & Core Logic -->
   <script src="mockData.js"></script>
   
   <script>
     let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem("rancho_cart")) || [];
+    } catch(e) {
+      cart = [];
+    }
+
+    function saveCartToStorage() {
+      localStorage.setItem("rancho_cart", JSON.stringify(cart));
+    }
+
     let activeCategory = "all";
     
     // Swipe UX State
@@ -822,6 +1062,305 @@
     function loadSwipeIndex() {
       const stored = localStorage.getItem("rancho_swipe_index_" + activeCategory);
       currentSwipeIndex = stored ? parseInt(stored) : 0;
+    }
+
+    // Header Search Toggle
+    function toggleSearchOverlay(isOpen) {
+      const overlay = document.getElementById("store-search-overlay");
+      if (!overlay) return;
+      if (isOpen) {
+        overlay.style.display = "flex";
+        const input = document.getElementById("store-search-input");
+        if (input) input.focus();
+      } else {
+        overlay.style.display = "none";
+        const input = document.getElementById("store-search-input");
+        if (input) {
+          input.value = "";
+          renderStoreProducts();
+        }
+      }
+    }
+
+    // Firebase Auth & Google Sign-In
+    let currentUser = null;
+    try {
+      currentUser = JSON.parse(localStorage.getItem("rancho_user")) || null;
+    } catch(e) {
+      currentUser = null;
+    }
+
+    // Configuração do Firebase (Caso queira integrar com chaves reais)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    let firebaseAuth = null;
+    const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+
+    if (isFirebaseConfigured) {
+      Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js")
+      ]).then(([{ initializeApp }, { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }]) => {
+        const app = initializeApp(firebaseConfig);
+        firebaseAuth = getAuth(app);
+        
+        onAuthStateChanged(firebaseAuth, (user) => {
+          if (user) {
+            currentUser = {
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              photoURL: user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80"
+            };
+            localStorage.setItem("rancho_user", JSON.stringify(currentUser));
+          } else {
+            currentUser = null;
+            localStorage.removeItem("rancho_user");
+          }
+          updateAuthUI();
+        });
+      }).catch(err => {
+        console.error("Erro ao carregar SDK do Firebase:", err);
+      });
+    }
+
+    function openAuthModal() {
+      document.getElementById("auth-dialog").showModal();
+    }
+
+    function closeAuthModal() {
+      document.getElementById("auth-dialog").close();
+    }
+
+    function toggleUserDropdown() {
+      const dropdown = document.getElementById("user-profile-dropdown");
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+      const isShown = dropdown.style.display === "flex";
+      dropdown.style.display = isShown ? "none" : "flex";
+    }
+
+    // Close dropdown on clicking outside
+    document.addEventListener("click", (e) => {
+      const dropdown = document.getElementById("user-profile-dropdown");
+      const profileBtn = document.getElementById("user-profile-btn");
+      if (dropdown && dropdown.style.display === "flex") {
+        if (!dropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+          dropdown.style.display = "none";
+        }
+      }
+    });
+
+    function handleGoogleSignIn() {
+      if (isFirebaseConfigured && firebaseAuth) {
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js").then(({ signInWithPopup, GoogleAuthProvider }) => {
+          const provider = new GoogleAuthProvider();
+          signInWithPopup(firebaseAuth, provider)
+            .then(() => {
+              closeAuthModal();
+            })
+            .catch(err => {
+              alert("Erro no Login com Firebase: " + err.message);
+            });
+        });
+      } else {
+        closeAuthModal();
+        
+        const width = 500;
+        const height = 600;
+        const left = (screen.width / 2) - (width / 2);
+        const top = (screen.height / 2) - (height / 2);
+        
+        const popup = window.open("", "Google Sign-In Simulator", `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+        
+        if (popup) {
+          popup.document.write(`
+            <!DOCTYPE html>
+            <html lang="pt-BR">
+            <head>
+              <meta charset="UTF-8">
+              <title>Fazer login com as Contas do Google</title>
+              <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+              <style>
+                body {
+                  font-family: 'Roboto', sans-serif;
+                  background-color: #ffffff;
+                  color: #202124;
+                  margin: 0;
+                  padding: 40px 24px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  box-sizing: border-box;
+                }
+                .logo-google {
+                  width: 74px;
+                  height: 24px;
+                  margin-bottom: 16px;
+                }
+                h1 {
+                  font-size: 24px;
+                  font-weight: 400;
+                  margin: 0 0 8px 0;
+                  text-align: center;
+                }
+                .subtitle {
+                  font-size: 16px;
+                  color: #5f6368;
+                  margin-bottom: 30px;
+                  text-align: center;
+                }
+                .account-box {
+                  border: 1px solid #dadce0;
+                  border-radius: 8px;
+                  width: 100%;
+                  max-width: 360px;
+                  margin-bottom: 24px;
+                  overflow: hidden;
+                }
+                .account-item {
+                  display: flex;
+                  align-items: center;
+                  padding: 16px;
+                  cursor: pointer;
+                  transition: background-color 0.2s;
+                  border-bottom: 1px solid #dadce0;
+                }
+                .account-item:last-child {
+                  border-bottom: none;
+                }
+                .account-item:hover {
+                  background-color: #f8f9fa;
+                }
+                .avatar {
+                  width: 36px;
+                  height: 36px;
+                  border-radius: 50%;
+                  margin-right: 12px;
+                }
+                .details {
+                  display: flex;
+                  flex-direction: column;
+                }
+                .name {
+                  font-size: 14px;
+                  font-weight: 500;
+                }
+                .email {
+                  font-size: 12px;
+                  color: #5f6368;
+                }
+                .footer {
+                  font-size: 12px;
+                  color: #5f6368;
+                  text-align: left;
+                  width: 100%;
+                  max-width: 360px;
+                  line-height: 1.5;
+                  margin-top: 12px;
+                }
+                .footer a {
+                  color: #1a73e8;
+                  text-decoration: none;
+                }
+              </style>
+            </head>
+            <body>
+              <img class="logo-google" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+              <h1>Escolha uma conta</h1>
+              <div class="subtitle">para prosseguir para Rancho Orgânico</div>
+              
+              <div class="account-box">
+                <div class="account-item" onclick="selectAccount('João de Santo Cristo', 'ojoaodesantocristo@gmail.com', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80')">
+                  <img class="avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80" alt="Avatar">
+                  <div class="details">
+                    <span class="name">João de Santo Cristo</span>
+                    <span class="email">ojoaodesantocristo@gmail.com</span>
+                  </div>
+                </div>
+                <div class="account-item" onclick="selectAccount('Maria Silva', 'mariasilva@gmail.com', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=80')">
+                  <img class="avatar" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=80" alt="Avatar">
+                  <div class="details">
+                    <span class="name">Maria Silva</span>
+                    <span class="email">mariasilva@gmail.com</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="footer">
+                Para continuar, o Google compartilhará seu nome, endereço de e-mail, foto do perfil e preferência de idioma com o Rancho Orgânico. Consulte os <a href="#">Termos de Serviço</a> e a <a href="#">Política de Privacidade</a> do Rancho Orgânico.
+              </div>
+
+              <script>
+                function selectAccount(name, email, photo) {
+                  window.opener.postMessage({
+                    type: 'GOOGLE_SIGN_IN_SIMULATOR_SUCCESS',
+                    user: {
+                      uid: 'mock-' + Math.random().toString(36).substr(2, 9),
+                      displayName: name,
+                      email: email,
+                      photoURL: photo
+                    }
+                  }, '*');
+                  window.close();
+                }
+              </script>
+            </body>
+            </html>
+          `);
+        }
+      }
+    }
+
+    // Listen to simulator messages
+    window.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "GOOGLE_SIGN_IN_SIMULATOR_SUCCESS") {
+        currentUser = event.data.user;
+        localStorage.setItem("rancho_user", JSON.stringify(currentUser));
+        updateAuthUI();
+      }
+    });
+
+    function handleSignOut() {
+      document.getElementById("user-profile-dropdown").style.display = "none";
+      if (isFirebaseConfigured && firebaseAuth) {
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js").then(({ signOut }) => {
+          signOut(firebaseAuth).then(() => {
+            currentUser = null;
+            localStorage.removeItem("rancho_user");
+            updateAuthUI();
+          });
+        });
+      } else {
+        currentUser = null;
+        localStorage.removeItem("rancho_user");
+        updateAuthUI();
+      }
+    }
+
+    function updateAuthUI() {
+      const profileBtn = document.getElementById("user-profile-btn");
+      if (!profileBtn) return;
+      
+      if (currentUser) {
+        profileBtn.innerHTML = `<img src="${currentUser.photoURL}" class="user-avatar-img" alt="${currentUser.displayName}">`;
+        profileBtn.title = `Minha Conta (${currentUser.displayName})`;
+        
+        document.getElementById("dropdown-user-name").textContent = currentUser.displayName;
+        document.getElementById("dropdown-user-email").textContent = currentUser.email;
+      } else {
+        profileBtn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
+        profileBtn.title = "Minha Conta";
+      }
     }
 
     // Setup storefront category tabs and select dropdown
@@ -992,6 +1531,7 @@
         }
         updateCartBadge();
         renderCartDrawer();
+        saveCartToStorage();
       }
     }
 
@@ -1166,6 +1706,7 @@
 
       // Clear cart
       cart = [];
+      saveCartToStorage();
       updateCartBadge();
       toggleCart(false);
 
@@ -1517,6 +2058,7 @@
       
       updateCartBadge();
       renderCartDrawer();
+      saveCartToStorage();
       
       const config = window.db.get("store_config") || { cartBehavior: "auto-open" };
       if (config.cartBehavior === "auto-open") {
@@ -1677,6 +2219,9 @@
       setupCategories();
       renderStoreProducts();
       updateStoreHero();
+      updateCartBadge();
+      renderCartDrawer();
+      updateAuthUI();
     });
 
     // Handle real-time sync with ERP configurations
