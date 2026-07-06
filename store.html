@@ -351,6 +351,158 @@
         width: 100%;
         align-items: stretch;
       }
+    /* Tinder Swipe Mode Layout Styles */
+    .swipe-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto;
+      padding: 10px 0;
+      position: relative;
+      user-select: none;
+    }
+    
+    .swipe-card-stack {
+      width: 100%;
+      height: 480px;
+      position: relative;
+      perspective: 1000px;
+      margin-bottom: 20px;
+    }
+    
+    .swipe-card {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.1s ease-out, opacity 0.2s ease;
+      cursor: grab;
+      touch-action: none; /* disable browser scroll while dragging */
+      overflow: hidden;
+      backface-visibility: hidden;
+    }
+    
+    .swipe-card:active {
+      cursor: grabbing;
+    }
+
+    .swipe-card-media {
+      width: 100%;
+      height: 220px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .swipe-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .swipe-badge {
+      position: absolute;
+      top: 20px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: rotate(-15deg);
+      z-index: 10;
+      pointer-events: none;
+      transition: opacity 0.1s ease;
+    }
+
+    .swipe-badge-like {
+      right: 20px;
+      border: 4px solid var(--color-success);
+      color: var(--color-success);
+      transform: rotate(-10deg);
+    }
+
+    .swipe-badge-nope {
+      left: 20px;
+      border: 4px solid var(--color-danger);
+      color: var(--color-danger);
+      transform: rotate(10deg);
+    }
+    
+    .swipe-actions {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .swipe-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .swipe-btn:active {
+      transform: scale(0.9);
+    }
+
+    .swipe-btn-nope {
+      background-color: var(--color-danger-bg);
+      color: var(--color-danger);
+    }
+
+    .swipe-btn-like {
+      background-color: var(--color-success-bg);
+      color: var(--color-success);
+    }
+    
+    .swipe-empty-state {
+      width: 100%;
+      height: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+    }
+
+    /* Mobile Sticky Category dropdown in swipe mode */
+    @media (max-width: 768px) {
+      .swipe-category-sticky {
+        position: sticky !important;
+        top: 60px !important;
+        background-color: var(--bg-primary) !important;
+        z-index: 100 !important;
+        padding: 10px 0 !important;
+        width: 100% !important;
+        box-shadow: 0 4px 6px -4px rgba(0,0,0,0.05) !important;
+      }
     }
   </style>
 </head>
@@ -401,6 +553,21 @@
     <!-- Products Grid -->
     <div class="product-grid" id="store-products-grid">
       <!-- Cards rendered dynamically -->
+    </div>
+
+    <!-- Swipe Tinder Mode Container -->
+    <div id="store-swipe-view" class="swipe-container" style="display: none;">
+      <div class="swipe-card-stack" id="swipe-card-stack">
+        <!-- Renders swipe card here dynamically -->
+      </div>
+      <div class="swipe-actions" id="swipe-actions-block">
+        <button class="swipe-btn swipe-btn-nope" onclick="handleSwipeAction(false)" title="Não quero">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button class="swipe-btn swipe-btn-like" onclick="handleSwipeAction(true)" title="Quero!">
+          <i class="fa-solid fa-heart"></i>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -471,6 +638,19 @@
       <h3 id="video-dialog-title" style="margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-size: 1.1rem; padding-right: 40px; color: var(--text-primary);">Vídeo do Produto</h3>
       <button onclick="closeVideoModal()" style="position: absolute; right: 16px; top: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
       <video id="video-player" controls style="width: 100%; border-radius: var(--radius-md); background: #000; height: 280px;"></video>
+  </dialog>
+
+  <!-- Swipe Quantity Dialog -->
+  <dialog id="swipe-qty-dialog" style="border: none; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 320px; width: 90%; background-color: var(--bg-secondary); color: var(--text-primary); outline: none;">
+    <h3 id="swipe-qty-title" style="font-size: 1.15rem; margin-bottom: 8px; font-family: 'Outfit', sans-serif; color: var(--accent-primary);">Adicionar à Sacola</h3>
+    <p id="swipe-qty-prod-name" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; font-weight: 500;"></p>
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label for="swipe-qty-input" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 6px;">Quantidade:</label>
+      <input type="number" id="swipe-qty-input" class="form-control" value="1" min="1" style="width: 100%; text-align: center; font-size: 1.3rem; font-weight: 700; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-primary); color: var(--text-primary);">
+    </div>
+    <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--border-color); padding-top: 16px;">
+      <button class="btn btn-secondary btn-sm" onclick="closeSwipeQtyDialog()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmSwipeQtyAdd()">Adicionar</button>
     </div>
   </dialog>
 
@@ -480,6 +660,16 @@
   <script>
     let cart = [];
     let activeCategory = "all";
+    
+    // Swipe UX State
+    let currentSwipeIndex = 0;
+    let swipeFilteredList = [];
+    let isDraggingCard = false;
+    let cardDragStartX = 0;
+    let cardDragStartY = 0;
+    let cardCurrentDeltaX = 0;
+    let cardCurrentDeltaY = 0;
+    let previousSearchQuery = "";
 
     // Setup storefront category tabs and select dropdown
     function setupCategories() {
@@ -499,6 +689,7 @@
         btn.textContent = cat === "all" ? "Todos" : cat;
         btn.onclick = () => {
           activeCategory = cat;
+          currentSwipeIndex = 0;
           if (mobileSelect) mobileSelect.value = cat;
           setupCategories();
           renderStoreProducts();
@@ -828,8 +1019,280 @@
 
     function selectMobileCategory(val) {
       activeCategory = val;
+      currentSwipeIndex = 0;
       setupCategories();
       renderStoreProducts();
+    }
+
+    // Swipe Tinder-style View rendering
+    function renderSwipeView() {
+      const stack = document.getElementById("swipe-card-stack");
+      const actionsBlock = document.getElementById("swipe-actions-block");
+      if (!stack) return;
+
+      const query = document.getElementById("store-search-input").value.toLowerCase();
+      const list = window.db.getProducts();
+
+      // Check if search query changed to reset index
+      if (query !== previousSearchQuery) {
+        currentSwipeIndex = 0;
+        previousSearchQuery = query;
+      }
+
+      swipeFilteredList = list.filter(p => {
+        if (p.stock <= 0) return false;
+        const matchesSearch = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+        const matchesCat = activeCategory === "all" || p.category === activeCategory;
+        return matchesSearch && matchesCat;
+      });
+
+      if (currentSwipeIndex >= swipeFilteredList.length) {
+        stack.innerHTML = `
+          <div class="swipe-empty-state">
+            <i class="fa-solid fa-basket-shopping" style="font-size: 3.5rem; color: var(--accent-primary); margin-bottom: 20px;"></i>
+            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 8px; font-size: 1.3rem;">Fim do Catálogo!</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.5; max-width: 280px; margin-left: auto; margin-right: auto;">
+              Você já avaliou todos os produtos orgânicos disponíveis nesta seção. Tente pesquisar ou selecionar outra categoria.
+            </p>
+            <button class="btn btn-primary btn-sm" onclick="resetSwipeIndex()"><i class="fa-solid fa-rotate-left"></i> Começar de Novo</button>
+          </div>
+        `;
+        if (actionsBlock) actionsBlock.style.display = "none";
+        return;
+      }
+
+      if (actionsBlock) actionsBlock.style.display = "flex";
+      const p = swipeFilteredList[currentSwipeIndex];
+      stack.innerHTML = `
+        <div class="swipe-card" id="active-swipe-card">
+          <div class="swipe-badge swipe-badge-like">QUERO</div>
+          <div class="swipe-badge swipe-badge-nope">NÃO</div>
+          
+          <div class="swipe-card-media">
+            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#e2e8f0; color:#94a3b8;"><i class="fa-solid fa-leaf" style="font-size:3.5rem;"></i></div>`}
+          </div>
+          
+          <div style="flex-grow: 1; padding: 12px 0 0 0; display:flex; flex-direction:column; justify-content:space-between; text-align: left;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                <span class="store-card-cat" style="font-size:0.75rem; text-transform:uppercase; font-weight:600; color:var(--text-muted);">${p.category}</span>
+                <span class="badge ${p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning'}" style="font-size:0.7rem; padding: 3px 6px;">${p.organicCert}</span>
+              </div>
+              <h3 style="font-family:'Outfit', sans-serif; font-size:1.25rem; font-weight:600; color:var(--text-primary); margin-bottom:4px;">${p.name}</h3>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); display:flex; align-items:center; gap: 6px;">
+                <i class="fa-solid fa-leaf" style="color:var(--accent-primary);"></i> Orgânico Certificado
+                ${p.videoUrl ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); playVideoModal('${p.videoUrl}', '${p.name}')" style="padding: 2px 6px; font-size:0.65rem; margin-left:auto;"><i class="fa-solid fa-video"></i> Vídeo</button>` : ''}
+              </div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid var(--border-color); padding-top:12px; margin-top:8px;">
+              <div>
+                <span style="font-size: 1.5rem; font-weight:700; color:var(--accent-primary);">R$ ${p.price.toFixed(2)}</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">/ ${p.unit}</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">
+                Disponível: <strong>${p.stock}</strong> ${p.unit}s
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setupSwipeGesture(document.getElementById("active-swipe-card"));
+    }
+
+    function resetSwipeIndex() {
+      currentSwipeIndex = 0;
+      renderSwipeView();
+    }
+
+    function setupSwipeGesture(card) {
+      if (!card) return;
+
+      const badgeLike = card.querySelector(".swipe-badge-like");
+      const badgeNope = card.querySelector(".swipe-badge-nope");
+
+      function startDrag(e) {
+        isDraggingCard = true;
+        const clientX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes("touch") ? e.touches[0].clientY : e.clientY;
+        cardDragStartX = clientX;
+        cardDragStartY = clientY;
+        card.style.transition = "none";
+      }
+
+      function moveDrag(e) {
+        if (!isDraggingCard) return;
+        const clientX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.includes("touch") ? e.touches[0].clientY : e.clientY;
+        
+        cardCurrentDeltaX = clientX - cardDragStartX;
+        cardCurrentDeltaY = clientY - cardDragStartY;
+
+        // Angle and movement calculation
+        const rotate = (cardCurrentDeltaX / 12).toFixed(2);
+        card.style.transform = `translate3d(${cardCurrentDeltaX}px, ${cardCurrentDeltaY}px, 0) rotate(${rotate}deg)`;
+
+        // Show/hide like & nope badges
+        if (cardCurrentDeltaX > 0) {
+          if (badgeLike) badgeLike.style.opacity = Math.min(cardCurrentDeltaX / 100, 1);
+          if (badgeNope) badgeNope.style.opacity = 0;
+        } else {
+          if (badgeNope) badgeNope.style.opacity = Math.min(-cardCurrentDeltaX / 100, 1);
+          if (badgeLike) badgeLike.style.opacity = 0;
+        }
+      }
+
+      function endDrag() {
+        if (!isDraggingCard) return;
+        isDraggingCard = false;
+
+        card.style.transition = "transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease";
+        
+        const threshold = 120;
+        if (cardCurrentDeltaX > threshold) {
+          // Swipe Right (Like)
+          card.style.transform = `translate3d(500px, ${cardCurrentDeltaY}px, 0) rotate(45deg)`;
+          card.style.opacity = 0;
+          setTimeout(() => handleSwipeAction(true), 150);
+        } else if (cardCurrentDeltaX < -threshold) {
+          // Swipe Left (Dislike)
+          card.style.transform = `translate3d(-500px, ${cardCurrentDeltaY}px, 0) rotate(-45deg)`;
+          card.style.opacity = 0;
+          setTimeout(() => handleSwipeAction(false), 150);
+        } else {
+          // Reset card
+          card.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+          if (badgeLike) badgeLike.style.opacity = 0;
+          if (badgeNope) badgeNope.style.opacity = 0;
+        }
+      }
+
+      // Touch handlers for mobile
+      card.addEventListener("touchstart", startDrag, { passive: true });
+      card.addEventListener("touchmove", moveDrag, { passive: true });
+      card.addEventListener("touchend", endDrag);
+
+      // Mouse handlers for desktop/testing
+      card.addEventListener("mousedown", startDrag);
+      
+      const moveHandler = (e) => moveDrag(e);
+      const endHandler = () => {
+        endDrag();
+        document.removeEventListener("mousemove", moveHandler);
+        document.removeEventListener("mouseup", endHandler);
+      };
+
+      card.addEventListener("mousedown", () => {
+        document.addEventListener("mousemove", moveHandler);
+        document.addEventListener("mouseup", endHandler);
+      });
+    }
+
+    function handleSwipeAction(isLike) {
+      const p = swipeFilteredList[currentSwipeIndex];
+      if (!p) return;
+
+      if (!isLike) {
+        // Dislike: fly away left animation and load next
+        const card = document.getElementById("active-swipe-card");
+        if (card) {
+          card.style.transition = "transform 0.4s ease, opacity 0.3s ease";
+          card.style.transform = "translate3d(-500px, 0, 0) rotate(-30deg)";
+          card.style.opacity = 0;
+        }
+        setTimeout(() => {
+          currentSwipeIndex++;
+          renderSwipeView();
+        }, 200);
+      } else {
+        // Like: fly away right animation and open quantity input dialog
+        const card = document.getElementById("active-swipe-card");
+        if (card) {
+          card.style.transition = "transform 0.4s ease, opacity 0.3s ease";
+          card.style.transform = "translate3d(500px, 0, 0) rotate(30deg)";
+          card.style.opacity = 0;
+        }
+        setTimeout(() => {
+          openSwipeQtyDialog(p);
+        }, 100);
+      }
+    }
+
+    function openSwipeQtyDialog(product) {
+      const dialog = document.getElementById("swipe-qty-dialog");
+      if (!dialog) return;
+
+      document.getElementById("swipe-qty-prod-name").textContent = `${product.name} (R$ ${product.price.toFixed(2)} / ${product.unit})`;
+      const input = document.getElementById("swipe-qty-input");
+      input.value = "1";
+      input.max = product.stock;
+
+      dialog.showModal();
+    }
+
+    function closeSwipeQtyDialog() {
+      document.getElementById("swipe-qty-dialog").close();
+      // Reset card position on cancel
+      renderSwipeView();
+    }
+
+    function confirmSwipeQtyAdd() {
+      const p = swipeFilteredList[currentSwipeIndex];
+      if (!p) return;
+
+      const qtyInput = document.getElementById("swipe-qty-input");
+      const qty = parseInt(qtyInput.value) || 1;
+
+      if (qty <= 0) {
+        alert("Quantidade inválida!");
+        return;
+      }
+      if (qty > p.stock) {
+        alert(`Apenas ${p.stock} unidades disponíveis em estoque!`);
+        return;
+      }
+
+      // Add to cart with specified qty
+      addToStoreCartWithQty(p.id, qty);
+      
+      document.getElementById("swipe-qty-dialog").close();
+      
+      // Load next card
+      currentSwipeIndex++;
+      renderSwipeView();
+    }
+
+    function addToStoreCartWithQty(prodId, qty) {
+      const product = window.db.getProducts().find(p => p.id === prodId);
+      if (!product) return;
+
+      const existing = cart.find(item => item.id === prodId);
+      if (existing) {
+        if (existing.qty + qty <= product.stock) {
+          existing.qty += qty;
+        } else {
+          existing.qty = product.stock;
+          alert(`Quantidade ajustada para o limite máximo de ${product.stock} unidades em estoque.`);
+        }
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          qty: qty,
+          unit: product.unit,
+          organicCert: product.organicCert
+        });
+      }
+      
+      updateCartBadge();
+      renderCartDrawer();
+      
+      const config = window.db.get("store_config") || { cartBehavior: "auto-open" };
+      if (config.cartBehavior === "auto-open") {
+        toggleCart(true);
+      }
     }
 
     function applyStoreConfig() {
@@ -848,26 +1311,46 @@
       const mobileWrapper = document.getElementById("store-mobile-select-wrapper");
       
       if (categoryTabs && mobileWrapper) {
-        if (config.mobileNavType === "footer") {
-          categoryTabs.classList.remove("mobile-tabs-hidden");
-          categoryTabs.classList.add("mobile-footer-active");
-          mobileWrapper.classList.remove("mobile-dropdown-active");
-          document.body.classList.add("mobile-footer-padding");
-        } else { // header-dropdown
+        if (config.catalogLayout === "swipe") {
+          // Swipe Tinder mode forces category select dropdown sticky at the top
           categoryTabs.classList.add("mobile-tabs-hidden");
           categoryTabs.classList.remove("mobile-footer-active");
           mobileWrapper.classList.add("mobile-dropdown-active");
+          mobileWrapper.classList.add("swipe-category-sticky");
           document.body.classList.remove("mobile-footer-padding");
+        } else {
+          mobileWrapper.classList.remove("swipe-category-sticky");
+          if (config.mobileNavType === "footer") {
+            categoryTabs.classList.remove("mobile-tabs-hidden");
+            categoryTabs.classList.add("mobile-footer-active");
+            mobileWrapper.classList.remove("mobile-dropdown-active");
+            document.body.classList.add("mobile-footer-padding");
+          } else { // header-dropdown
+            categoryTabs.classList.add("mobile-tabs-hidden");
+            categoryTabs.classList.remove("mobile-footer-active");
+            mobileWrapper.classList.add("mobile-dropdown-active");
+            document.body.classList.remove("mobile-footer-padding");
+          }
         }
       }
 
-      // C. Apply catalog visual layout (grid vs list)
+      // C. Apply catalog visual layout (grid vs list vs swipe)
       const gridEl = document.getElementById("store-products-grid");
-      if (gridEl) {
-        if (config.catalogLayout === "list") {
-          gridEl.classList.add("layout-list");
+      const swipeEl = document.getElementById("store-swipe-view");
+      if (gridEl && swipeEl) {
+        if (config.catalogLayout === "swipe") {
+          gridEl.style.display = "none";
+          swipeEl.style.display = "flex";
+          currentSwipeIndex = 0; // reset index on layout switch
+          renderSwipeView();
         } else {
-          gridEl.classList.remove("layout-list");
+          swipeEl.style.display = "none";
+          gridEl.style.display = ""; // restore default layout display (css grid or layout-list flex)
+          if (config.catalogLayout === "list") {
+            gridEl.classList.add("layout-list");
+          } else {
+            gridEl.classList.remove("layout-list");
+          }
         }
       }
     }
