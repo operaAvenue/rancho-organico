@@ -712,6 +712,13 @@
 
     // Render client catalog items
     function renderStoreProducts() {
+      const config = window.db.get("store_config") || { catalogLayout: "grid" };
+      const isMobile = window.innerWidth <= 768;
+      if (config.catalogLayout === "swipe" && isMobile) {
+        renderSwipeView();
+        return;
+      }
+
       const grid = document.getElementById("store-products-grid");
       grid.innerHTML = "";
       
@@ -1306,12 +1313,15 @@
       // A. Apply theme colors via CSS custom properties
       applyThemeVariables(config.storeTheme);
 
+      const isMobile = window.innerWidth <= 768;
+      const activeLayout = (config.catalogLayout === "swipe" && !isMobile) ? "grid" : config.catalogLayout;
+
       // B. Apply mobile navigation classes
       const categoryTabs = document.getElementById("store-category-tabs");
       const mobileWrapper = document.getElementById("store-mobile-select-wrapper");
       
       if (categoryTabs && mobileWrapper) {
-        if (config.catalogLayout === "swipe") {
+        if (activeLayout === "swipe") {
           // Swipe Tinder mode forces category select dropdown sticky at the top
           categoryTabs.classList.add("mobile-tabs-hidden");
           categoryTabs.classList.remove("mobile-footer-active");
@@ -1338,7 +1348,7 @@
       const gridEl = document.getElementById("store-products-grid");
       const swipeEl = document.getElementById("store-swipe-view");
       if (gridEl && swipeEl) {
-        if (config.catalogLayout === "swipe") {
+        if (activeLayout === "swipe") {
           gridEl.style.display = "none";
           swipeEl.style.display = "flex";
           currentSwipeIndex = 0; // reset index on layout switch
@@ -1346,7 +1356,7 @@
         } else {
           swipeEl.style.display = "none";
           gridEl.style.display = ""; // restore default layout display (css grid or layout-list flex)
-          if (config.catalogLayout === "list") {
+          if (activeLayout === "list") {
             gridEl.classList.add("layout-list");
           } else {
             gridEl.classList.remove("layout-list");
@@ -1430,6 +1440,19 @@
         setupCategories();
         renderStoreProducts();
       }
+    });
+
+    // Handle viewport changes dynamically (Tinder Swipe falls back to Grid on Desktop)
+    let lastWidth = window.innerWidth;
+    window.addEventListener("resize", () => {
+      const isMobileNow = window.innerWidth <= 768;
+      const wasMobileBefore = lastWidth <= 768;
+      if (isMobileNow !== wasMobileBefore) {
+        applyStoreConfig();
+        setupCategories();
+        renderStoreProducts();
+      }
+      lastWidth = window.innerWidth;
     });
   </script>
 </body>
