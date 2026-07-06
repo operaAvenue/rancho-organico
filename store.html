@@ -343,18 +343,38 @@
         padding-bottom: 80px !important;
       }
 
-      /* For card lists on mobile, force row-direction to be stacked since screen is too narrow */
+      /* Detailed List Layout on Mobile (Maintains horizontal rows) */
       .product-grid.layout-list .store-card {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 12px !important;
+        gap: 12px !important;
       }
       .product-grid.layout-list .store-card .store-card-img {
-        width: 100%;
-        height: 180px;
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: var(--radius-md) !important;
+        flex-shrink: 0 !important;
+      }
+      .product-grid.layout-list .store-card .store-card-body {
+        gap: 2px !important;
+      }
+      .product-grid.layout-list .store-card .store-card-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 2px !important;
       }
       .product-grid.layout-list .store-card .store-card-footer {
-        width: 100%;
-        align-items: stretch;
+        width: auto !important;
+        align-items: flex-end !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+      }
+      .product-grid.layout-list .store-card .store-card-footer span {
+        font-size: 1.1rem !important;
+      }
+      .product-grid.layout-list .store-card .btn-add-cart {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
       }
     /* Tinder Swipe Mode Layout Styles */
     .swipe-container {
@@ -363,7 +383,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
       margin: 0 auto;
       padding: 10px 0;
       position: relative;
@@ -372,7 +392,7 @@
     
     .swipe-card-stack {
       width: 100%;
-      height: 480px;
+      height: 530px;
       position: relative;
       perspective: 1000px;
       margin-bottom: 20px;
@@ -384,14 +404,10 @@
       background-color: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
       position: absolute;
       left: 0;
       top: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       transition: transform 0.1s ease-out, opacity 0.2s ease;
       cursor: grab;
       touch-action: none; /* disable browser scroll while dragging */
@@ -404,18 +420,43 @@
     }
 
     .swipe-card-media {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 220px;
-      border-radius: var(--radius-md);
+      height: 100%;
+      z-index: 1;
+      border-radius: inherit;
       overflow: hidden;
-      border: 1px solid var(--border-color);
-      position: relative;
     }
 
     .swipe-card-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .swipe-card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .swipe-card-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 24px;
+      box-sizing: border-box;
+      z-index: 3;
+      color: #ffffff !important;
+      text-align: left;
     }
 
     .swipe-badge {
@@ -598,7 +639,7 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
         <button class="swipe-btn swipe-btn-like" onclick="handleSwipeAction(true)" title="Quero!">
-          <i class="fa-solid fa-heart"></i>
+          <i class="fa-solid fa-cart-shopping"></i>
         </button>
       </div>
     </div>
@@ -1152,29 +1193,29 @@
           <div class="swipe-badge swipe-badge-nope">NÃO</div>
           
           <div class="swipe-card-media">
-            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#e2e8f0; color:#94a3b8;"><i class="fa-solid fa-leaf" style="font-size:3.5rem;"></i></div>`}
+            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:#64748b;"><i class="fa-solid fa-leaf" style="font-size:4rem;"></i></div>`}
           </div>
           
-          <div style="flex-grow: 1; padding: 12px 0 0 0; display:flex; flex-direction:column; justify-content:space-between; text-align: left;">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-                <span class="store-card-cat" style="font-size:0.75rem; text-transform:uppercase; font-weight:600; color:var(--text-muted);">${p.category}</span>
-                <span class="badge ${p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning'}" style="font-size:0.7rem; padding: 3px 6px;">${p.organicCert}</span>
-              </div>
-              <h3 style="font-family:'Outfit', sans-serif; font-size:1.25rem; font-weight:600; color:var(--text-primary); margin-bottom:4px;">${p.name}</h3>
-              <div style="font-size: 0.85rem; color: var(--text-secondary); display:flex; align-items:center; gap: 6px;">
-                <i class="fa-solid fa-leaf" style="color:var(--accent-primary);"></i> Orgânico Certificado
-                ${p.videoUrl ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); playVideoModal('${p.videoUrl}', '${p.name}')" style="padding: 2px 6px; font-size:0.65rem; margin-left:auto;"><i class="fa-solid fa-video"></i> Vídeo</button>` : ''}
-              </div>
+          <div class="swipe-card-overlay"></div>
+          
+          <div class="swipe-card-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+              <span class="store-card-cat" style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:rgba(255,255,255,0.7);">${p.category}</span>
+              <span class="badge ${p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning'}" style="font-size:0.7rem; padding: 4px 8px; border:none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${p.organicCert}</span>
+            </div>
+            <h3 style="font-family:'Outfit', sans-serif; font-size:1.4rem; font-weight:700; color:#ffffff; margin-bottom:6px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${p.name}</h3>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); display:flex; align-items:center; gap: 6px; margin-bottom: 12px;">
+              <i class="fa-solid fa-leaf" style="color:var(--accent-primary);"></i> Alimento Orgânico
+              ${p.videoUrl ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); playVideoModal('${p.videoUrl}', '${p.name}')" style="padding: 2px 8px; font-size:0.65rem; margin-left:auto; border:1px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.4); color:#ffffff;"><i class="fa-solid fa-video"></i> Vídeo</button>` : ''}
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid var(--border-color); padding-top:12px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; margin-top:8px;">
               <div>
-                <span style="font-size: 1.5rem; font-weight:700; color:var(--accent-primary);">R$ ${p.price.toFixed(2)}</span>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">/ ${p.unit}</span>
+                <span style="font-size: 1.6rem; font-weight:800; color:#ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">R$ ${p.price.toFixed(2)}</span>
+                <span style="font-size: 0.85rem; color: rgba(255,255,255,0.75);">/ ${p.unit}</span>
               </div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">
-                Disponível: <strong>${p.stock}</strong> ${p.unit}s
+              <div style="font-size:0.8rem; color:rgba(255,255,255,0.75);">
+                Estoque: <strong>${p.stock}</strong> ${p.unit}s
               </div>
             </div>
           </div>
