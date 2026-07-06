@@ -1429,7 +1429,7 @@ input:checked + .slider:before {
   }
   main.main-content {
     margin-left: 70px;
-    padding: 24px;
+    padding: 12px !important;
   }
   .nav-item span {
     display: none;
@@ -1439,6 +1439,62 @@ input:checked + .slider:before {
   }
   .chat-sidebar, .chat-settings-panel {
     display: none;
+  }
+
+  /* Force administrative panel elements to fit horizontal canvas */
+  body {
+    overflow-x: hidden !important;
+  }
+  .card {
+    padding: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .form-row, .form-group-inline {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .form-control, input, select, textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: nowrap !important;
+  }
+  dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 16px !important;
+    box-sizing: border-box !important;
+  }
+  .dialog-body {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+  .pos-search-category {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .pos-item-card {
+    padding: 8px !important;
+  }
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  .fiscal-resumo-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 

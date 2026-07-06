@@ -1483,11 +1483,13 @@
       currentSwipeIndex++;
       saveSwipeIndex();
       
-      // 3. Render the next card immediately in the DOM behind the drawer
-      renderSwipeView();
-
-      // 4. Add to cart with specified qty (which triggers the cart drawer to slide open over the new card)
+      // 3. Add to cart with specified qty (which might open the cart drawer)
       addToStoreCartWithQty(p.id, qty);
+
+      // 4. Render the next card after a brief timeout to avoid transition collision and let browser repaint
+      setTimeout(() => {
+        renderSwipeView();
+      }, 150);
     }
 
     function addToStoreCartWithQty(prodId, qty) {
