@@ -59,15 +59,17 @@
       font-family: 'Outfit', sans-serif;
       font-size: 2.5rem;
       font-weight: 700;
-      color: var(--text-primary);
+      color: #ffffff !important;
       margin-bottom: 12px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
 
     .store-hero p {
       font-size: 1.1rem;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.9) !important;
       max-width: 600px;
       margin: 0 auto;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     }
 
     .store-container {
@@ -1098,14 +1100,10 @@
       
       if (activeCategory === "all") {
         heroTitle.textContent = "Rancho Orgânico";
-        heroTitle.style.color = "";
         heroSubtitle.textContent = "Do campo para a sua mesa. Produtos 100% orgânicos, cultivados com responsabilidade socioambiental e entregues frescos na sua casa.";
-        heroSubtitle.style.color = "";
       } else {
         heroTitle.textContent = activeCategory;
-        heroTitle.style.color = "#ffffff";
         heroSubtitle.textContent = `Confira a nossa seleção exclusiva e sustentável de ${activeCategory.toLowerCase()}.`;
-        heroSubtitle.style.color = "rgba(255, 255, 255, 0.85)";
       }
     }
 
