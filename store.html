@@ -907,12 +907,12 @@
     </div>
 
     <!-- Products Grid -->
-    <div class="product-grid" id="store-products-grid">
+    <div class="product-grid notranslate" translate="no" id="store-products-grid">
       <!-- Cards rendered dynamically -->
     </div>
 
     <!-- Swipe Tinder Mode Container -->
-    <div id="store-swipe-view" class="swipe-container" style="display: none;">
+    <div id="store-swipe-view" class="swipe-container notranslate" translate="no" style="display: none;">
       <!-- Category select overlay on card -->
       <div class="swipe-category-overlay-wrapper" id="swipe-category-select-wrapper">
         <select id="swipe-category-select" class="form-control" onchange="selectMobileCategory(this.value)">
@@ -1455,17 +1455,25 @@
           const card = document.createElement("div");
           card.className = "store-card";
 
+          const imageHtml = p.imageUrl ? 
+            '<div class="store-card-img"><img src="' + p.imageUrl + '" alt="' + p.name + '" style="width: 100%; height: 100%; object-fit: cover;"></div>' : 
+            '';
+          const videoBtnHtml = p.videoUrl ? 
+            '<button class="btn btn-secondary" onclick="event.stopPropagation(); playVideoModal(\'' + p.videoUrl.replace(/'/g, "\\'") + '\', \'' + p.name.replace(/'/g, "\\'") + '\')" style="padding: 3px 6px; font-size: 0.7rem; border-radius: var(--radius-sm);"><i class="fa-solid fa-video"></i> Vídeo</button>' : 
+            '';
+          const badgeClass = p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning';
+
           card.innerHTML = `
-            ${p.imageUrl ? `<div class="store-card-img"><img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;"></div>` : ''}
+            ${imageHtml}
             <div class="store-card-body">
               <div class="store-card-header" style="margin-bottom: 8px;">
                 <span class="store-card-cat">${p.category}</span>
-                <span class="badge ${p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning'}">${p.organicCert}</span>
+                <span class="badge ${badgeClass}">${p.organicCert}</span>
               </div>
               <h3 class="store-card-title" style="margin-bottom: 6px;">${p.name}</h3>
               <div class="store-card-cert" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px;">
                 <span><i class="fa-solid fa-leaf"></i> Orgânico</span>
-                ${p.videoUrl ? `<button class="btn btn-secondary" onclick="event.stopPropagation(); playVideoModal('${p.videoUrl}', '${p.name}')" style="padding: 3px 6px; font-size: 0.7rem; border-radius: var(--radius-sm);"><i class="fa-solid fa-video"></i> Vídeo</button>` : ''}
+                ${videoBtnHtml}
               </div>
             </div>
             <div class="store-card-footer">
@@ -1834,13 +1842,22 @@
 
       if (actionsBlock) actionsBlock.style.display = "flex";
       const p = swipeFilteredList[currentSwipeIndex];
+
+      const imageHtml = p.imageUrl ? 
+        '<img src="' + p.imageUrl + '" alt="' + p.name + '">' : 
+        '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:#64748b;"><i class="fa-solid fa-leaf" style="font-size:4rem;"></i></div>';
+      const videoBtnHtml = p.videoUrl ? 
+        '<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); playVideoModal(\'' + p.videoUrl.replace(/'/g, "\\'") + '\', \'' + p.name.replace(/'/g, "\\'") + '\')" style="padding: 2px 8px; font-size:0.65rem; margin-left:auto; border:1px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.4); color:#ffffff;"><i class="fa-solid fa-video"></i> Vídeo</button>' : 
+        '';
+      const badgeClass = p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning';
+
       stack.innerHTML = `
         <div class="swipe-card" id="active-swipe-card">
           <div class="swipe-badge swipe-badge-like">QUERO</div>
           <div class="swipe-badge swipe-badge-nope">NÃO</div>
           
           <div class="swipe-card-media">
-            ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:#64748b;"><i class="fa-solid fa-leaf" style="font-size:4rem;"></i></div>`}
+            ${imageHtml}
           </div>
           
           <div class="swipe-card-overlay"></div>
@@ -1848,12 +1865,12 @@
           <div class="swipe-card-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
               <span class="store-card-cat" style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:rgba(255,255,255,0.7);">${p.category}</span>
-              <span class="badge ${p.organicCert === 'Certificado' ? 'badge-success' : 'badge-warning'}" style="font-size:0.7rem; padding: 4px 8px; border:none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${p.organicCert}</span>
+              <span class="badge ${badgeClass}" style="font-size:0.7rem; padding: 4px 8px; border:none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${p.organicCert}</span>
             </div>
             <h3 style="font-family:'Outfit', sans-serif; font-size:1.4rem; font-weight:700; color:#ffffff; margin-bottom:6px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${p.name}</h3>
             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.85); display:flex; align-items:center; gap: 6px; margin-bottom: 12px;">
               <i class="fa-solid fa-leaf" style="color:var(--accent-primary);"></i> Alimento Orgânico
-              ${p.videoUrl ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); playVideoModal('${p.videoUrl}', '${p.name}')" style="padding: 2px 8px; font-size:0.65rem; margin-left:auto; border:1px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.4); color:#ffffff;"><i class="fa-solid fa-video"></i> Vídeo</button>` : ''}
+              ${videoBtnHtml}
             </div>
             
             <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; margin-top:8px;">
