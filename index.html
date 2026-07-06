@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rancho Orgânico | ERP de Alimentos Orgânicos</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" aria-label="Navegação Principal">
+    <div class="logo-container">
+      <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+      <div class="logo-text">Rancho Orgânico</div>
+    </div>
+
+    <nav class="nav-menu">
+      <button class="nav-item active" data-view="dashboard" aria-current="page">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="pos">
+        <i class="fa-solid fa-cash-register"></i>
+        <span>Ponto de Venda (PDV)</span>
+      </button>
+      <button class="nav-item" data-view="products">
+        <i class="fa-solid fa-box"></i>
+        <span>Produtos</span>
+      </button>
+      <button class="nav-item" data-view="customers">
+        <i class="fa-solid fa-users"></i>
+        <span>Clientes</span>
+      </button>
+      <button class="nav-item" data-view="suppliers">
+        <i class="fa-solid fa-truck-field"></i>
+        <span>Fornecedores</span>
+      </button>
+      <button class="nav-item" data-view="sales-history">
+        <i class="fa-solid fa-receipt"></i>
+        <span>Vendas & Notas</span>
+      </button>
+      <button class="nav-item" data-view="accounting">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Contabilidade Fiscal</span>
+      </button>
+      <button class="nav-item" data-view="integrations">
+        <i class="fa-solid fa-circle-nodes"></i>
+        <span>Integrações</span>
+      </button>
+      <button class="nav-item" data-view="whatsapp-ai">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>WhatsApp & IA</span>
+      </button>
+      <button class="nav-item" data-view="store-settings">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Configurações Loja</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="store.html" target="_blank" class="btn btn-primary btn-sm" style="width: 100%; margin-bottom: 12px; font-size: 0.85rem; text-decoration: none;">
+        <i class="fa-solid fa-store"></i> Ver Loja Online
+      </a>
+      <div class="store-badge">
+        <div class="store-status-indicator"></div>
+        <div class="store-info">
+          <span class="store-title">Rancho Orgânico</span>
+          <span class="store-subtitle">Loja Online & Física</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main View Container -->
+  <main class="main-content">
+    
+    <!-- 1. DASHBOARD VIEW -->
+    <section id="dashboard-view" class="view-panel active">
+      <div class="view-header">
+        <h1>Painel Geral</h1>
+        <div class="header-actions">
+          <span class="badge badge-success"><i class="fa-solid fa-sync fa-spin"></i> Sincronizado</span>
+          <span id="current-date-badge" class="badge badge-info">25 Jun 2026</span>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="dashboard-grid">
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Faturamento Total</h3>
+            <div class="value" id="kpi-revenue">R$ 0,00</div>
+            <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12.4%</span>
+          </div>
+          <div class="kpi-icon"><i class="fa-solid fa-wallet"></i></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Total de Vendas</h3>
+            <div class="value" id="kpi-sales-count">0</div>
+            <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +8.2%</span>
+          </div>
+          <div class="kpi-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Ticket Médio</h3>
+            <div class="value" id="kpi-avg-ticket">R$ 0,00</div>
+            <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +4.5%</span>
+          </div>
+          <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Clientes Ativos</h3>
+            <div class="value" id="kpi-active-clients">0</div>
+            <span class="kpi-trend up"><i class="fa-solid fa-arrow-trend-up"></i> +2.1%</span>
+          </div>
+          <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+        </div>
+      </div>
+
+      <!-- Charts Layout -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Faturamento por Canal de Venda</h3>
+          <div class="chart-container">
+            <canvas id="salesChannelChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Alertas Importantes</h3>
+          <div class="alerts-list" id="dashboard-alerts">
+            <!-- Dynamic alerts -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="card-table-wrap">
+        <div class="table-header-row">
+          <h3>Últimas Vendas Recebidas</h3>
+          <button class="btn btn-secondary btn-sm" onclick="app.switchView('sales-history')">Ver Todas</button>
+        </div>
+        <div class="scroll-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Cód Venda</th>
+                <th>Data / Hora</th>
+                <th>Cliente</th>
+                <th>Itens</th>
+                <th>Total</th>
+                <th>Canal</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-sales-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. POINT OF SALE (POS) VIEW -->
+    <section id="pos-view" class="view-panel">
+      <div class="view-header">
+        <h1>Ponto de Venda (PDV)</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="app.clearCart()"><i class="fa-solid fa-trash"></i> Limpar Carrinho</button>
+        </div>
+      </div>
+
+      <div class="pos-container">
+        <!-- Products Grid & Categories -->
+        <div class="pos-products">
+          <div class="pos-search-category">
+            <search style="flex-grow: 1;">
+              <input type="search" id="pos-search-input" class="input-search" placeholder="Buscar produto orgânico..." oninput="app.filterPOSProducts()">
+            </search>
+            <div style="max-width: 280px; display: flex; align-items: center; gap: 8px; background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0 12px;">
+              <i class="fa-solid fa-barcode" style="color: var(--text-muted);"></i>
+              <input type="text" id="pos-barcode-input" style="border: none; background: none; outline: none; padding: 10px 0; font-size: 0.9rem; width: 100%;" placeholder="Bipar código (Ex: 7891020304012)..." onkeydown="app.handleBarcodeInput(event)">
+            </div>
+            <div class="category-tabs" id="pos-category-tabs">
+              <!-- Dynamic category filters -->
+            </div>
+          </div>
+
+          <div class="pos-products-grid" id="pos-products-grid">
+            <!-- Dynamic items -->
+          </div>
+        </div>
+
+        <!-- POS Checkout Cart -->
+        <div class="pos-cart">
+          <div class="pos-cart-header">Carrinho de Compras</div>
+          <div class="pos-cart-items" id="pos-cart-items">
+            <!-- Added items -->
+          </div>
+
+          <div class="pos-cart-summary">
+            <!-- Client selector -->
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="pos-customer-select">Cliente</label>
+              <select id="pos-customer-select" class="form-control" onchange="app.updatePOSCustomer()">
+                <option value="walk-in">Cliente Balcão (Não Identificado)</option>
+                <!-- Filled dynamically -->
+              </select>
+            </div>
+
+            <!-- Channel selector -->
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="pos-channel-select">Canal de Origem</label>
+              <select id="pos-channel-select" class="form-control">
+                <option value="Balcão">Balcão (Loja Física)</option>
+                <option value="WhatsApp">WhatsApp / Chat</option>
+                <option value="iFood">Simulador iFood</option>
+                <option value="CardapioFacil">Simulador CardapioFacil</option>
+              </select>
+            </div>
+
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="pos-subtotal">R$ 0,00</span>
+            </div>
+            <div class="summary-row">
+              <span>Simulação de Impostos (Simples):</span>
+              <span id="pos-taxes">R$ 0,00</span>
+            </div>
+            <div class="summary-row savings" id="pos-savings-row" style="display: none;">
+              <span>Isenção ICMS Orgânico aplicado!</span>
+              <span id="pos-savings-amount">R$ 0,00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total a Pagar:</span>
+              <span id="pos-total">R$ 0,00</span>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 16px; width: 100%;" onclick="app.checkoutPOS()">
+              <i class="fa-solid fa-circle-check"></i> Finalizar Venda & Emitir Nota
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PRODUCTS MANAGEMENT VIEW -->
+    <section id="products-view" class="view-panel">
+      <div class="view-header">
+        <h1>Gestão de Produtos</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="app.openProductModal()"><i class="fa-solid fa-plus"></i> Novo Produto</button>
+        </div>
+      </div>
+
+      <div class="card-table-wrap">
+        <div class="table-header-row">
+          <div class="table-search-bar">
+            <input type="search" id="product-search" class="input-search" placeholder="Filtrar por nome ou categoria..." oninput="app.renderProductsTable()">
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <select id="product-filter-cert" class="form-control" style="padding: 8px 12px; font-size: 0.85rem;" onchange="app.renderProductsTable()">
+              <option value="all">Certificação (Todas)</option>
+              <option value="Certificado">Certificado</option>
+              <option value="Em Transição">Em Transição</option>
+              <option value="Não Certificado">Não Certificado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="scroll-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Estoque</th>
+                <th>Unidade</th>
+                <th>Custo</th>
+                <th>Preço</th>
+                <th>Validade</th>
+                <th>Certificado Orgânico</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CUSTOMERS VIEW -->
+    <section id="customers-view" class="view-panel">
+      <div class="view-header">
+        <h1>Gestão de Clientes</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="app.openCustomerModal()"><i class="fa-solid fa-user-plus"></i> Novo Cliente</button>
+        </div>
+      </div>
+
+      <div class="card-table-wrap">
+        <div class="table-header-row">
+          <div class="table-search-bar">
+            <input type="search" id="customer-search" class="input-search" placeholder="Buscar por nome ou contato..." oninput="app.renderCustomersTable()">
+          </div>
+        </div>
+
+        <div class="scroll-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome Completo</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
+                <th>Endereço Principal</th>
+                <th>Compras</th>
+                <th>Total Gasto</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="customers-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SUPPLIERS VIEW -->
+    <section id="suppliers-view" class="view-panel">
+      <div class="view-header">
+        <h1>Fornecedores Parceiros</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="app.openSupplierModal()"><i class="fa-solid fa-truck-ramp-box"></i> Novo Fornecedor</button>
+        </div>
+      </div>
+
+      <div class="card-table-wrap">
+        <div class="table-header-row">
+          <div class="table-search-bar">
+            <input type="search" id="supplier-search" class="input-search" placeholder="Buscar por fornecedor ou produtos..." oninput="app.renderSuppliersTable()">
+          </div>
+        </div>
+
+        <div class="scroll-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Razão Social</th>
+                <th>Responsável</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
+                <th>Categorias Fornecidas</th>
+                <th>Selo de Auditoria</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SALES HISTORY & INVOICES VIEW -->
+    <section id="sales-history-view" class="view-panel">
+      <div class="view-header">
+        <h1>Vendas & Notas Fiscais</h1>
+      </div>
+
+      <!-- Taxes Summary Panels -->
+      <div class="tax-dashboard-header">
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Impostos Acumulados (Mês)</h3>
+            <div class="value" id="tax-kpi-total">R$ 0,00</div>
+            <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Simples Nacional</span>
+          </div>
+          <div class="kpi-icon" style="color: var(--color-warning);"><i class="fa-solid fa-percent"></i></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Isenções Tributárias Orgânicos</h3>
+            <div class="value" id="tax-kpi-saved" style="color: var(--color-success);">R$ 0,00</div>
+            <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Economia com Leis de Incentivo</span>
+          </div>
+          <div class="kpi-icon" style="color: var(--color-success);"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-details">
+            <h3>Alíquota Efetiva Média</h3>
+            <div class="value" id="tax-kpi-effective">4.0%</div>
+            <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Reduzida (Orgânico Certificado)</span>
+          </div>
+          <div class="kpi-icon" style="color: var(--color-info);"><i class="fa-solid fa-scale-balanced"></i></div>
+        </div>
+      </div>
+
+      <div class="card-table-wrap">
+        <div class="table-header-row">
+          <div class="table-search-bar">
+            <input type="search" id="sales-search" class="input-search" placeholder="Pesquisar venda por cliente ou canal..." oninput="app.renderSalesTable()">
+          </div>
+        </div>
+
+        <div class="scroll-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Impostos</th>
+                <th>Canal</th>
+                <th>Nota Fiscal (NFC-e)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="sales-history-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. ACCOUNTING & FISCAL MANAGEMENT VIEW -->
+    <section id="accounting-view" class="view-panel">
+      <div class="view-header">
+        <h1>Contabilidade & Livro Fiscal (SP)</h1>
+        <div class="header-actions">
+          <span class="badge badge-success"><i class="fa-solid fa-building-columns"></i> Regulamento SP RICMS Art. 36</span>
+        </div>
+      </div>
+
+      <!-- Sub-Tabs Navigation for Accounting -->
+      <div class="fiscal-tabs">
+        <button class="fiscal-tab-btn active" data-subview="fiscal-summary">Resumo Fiscal</button>
+        <button class="fiscal-tab-btn" data-subview="fiscal-entries">Notas de Entrada (Restoque)</button>
+        <button class="fiscal-tab-btn" data-subview="fiscal-exits">Notas de Saída (Vendas)</button>
+        <button class="fiscal-tab-btn" data-subview="fiscal-settings">Regras de Incentivo SP</button>
+      </div>
+
+      <!-- A. Resumo Fiscal Subpanel -->
+      <div id="fiscal-summary-subpanel" class="fiscal-subpanel active">
+        <div class="dashboard-grid">
+          <div class="kpi-card">
+            <div class="kpi-details">
+              <h3>Faturamento Saídas (Mês)</h3>
+              <div class="value" id="fisc-revenue-out">R$ 0,00</div>
+              <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Total de Vendas de Saída</span>
+            </div>
+            <div class="kpi-icon" style="color: var(--accent-primary);"><i class="fa-solid fa-arrow-up-from-bracket"></i></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-details">
+              <h3>Compras de Entrada (Mês)</h3>
+              <div class="value" id="fisc-revenue-in">R$ 0,00</div>
+              <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Contra-Notas Emitidas a Produtores</span>
+            </div>
+            <div class="kpi-icon" style="color: var(--color-info);"><i class="fa-solid fa-arrow-down-to-bracket"></i></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-details">
+              <h3>Simples Nacional Estimado</h3>
+              <div class="value" id="fisc-taxes-paid">R$ 0,00</div>
+              <span class="kpi-subtitle" style="font-size: 0.75rem; color: var(--text-muted);">Alíquota Efetiva Reduzida</span>
+            </div>
+            <div class="kpi-icon" style="color: var(--color-warning);"><i class="fa-solid fa-scale-balanced"></i></div>
+          </div>
+        </div>
+
+        <div class="card-table-wrap">
+          <h3 style="margin-bottom: 16px;">Tabela e Códigos Fiscais Mapeados</h3>
+          <div class="scroll-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>CFOP</th>
+                  <th>Operação Comercial</th>
+                  <th>Alíquota Tributária</th>
+                  <th>ICMS Estadual (SP)</th>
+                  <th>CSOSN Operação</th>
+                  <th>Finalidade do Rancho</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1.122</strong></td>
+                  <td>Entrada de compra de produtor rural</td>
+                  <td>0.0%</td>
+                  <td><span class="badge badge-success">Isento (Art.36)</span></td>
+                  <td>400 - Não Tributada</td>
+                  <td>Restoque de sitiantes de SP sem nota fiscal eletrônica própria</td>
+                </tr>
+                <tr>
+                  <td><strong>1.102</strong></td>
+                  <td>Compra para comercialização (adquirida de PJ)</td>
+                  <td>0.0%</td>
+                  <td><span class="badge badge-success">Isento (Art.36)</span></td>
+                  <td>400 - Não Tributada</td>
+                  <td>Entrada de mercadoria com nota emitida por cooperativas</td>
+                </tr>
+                <tr>
+                  <td><strong>5.102</strong></td>
+                  <td>Venda de mercadoria em balcão físico</td>
+                  <td>3.96% (efetivo)</td>
+                  <td><span class="badge badge-success">Isento (Art.36)</span></td>
+                  <td>400 / 102 Misto</td>
+                  <td>NFC-e emitida diretamente para o consumidor no PDV</td>
+                </tr>
+                <tr>
+                  <td><strong>5.106</strong></td>
+                  <td>Venda de mercadoria via delivery / WhatsApp</td>
+                  <td>3.96% (efetivo)</td>
+                  <td><span class="badge badge-success">Isento (Art.36)</span></td>
+                  <td>400 / 102 Misto</td>
+                  <td>Vendas faturadas por e-commerce local ou tele-entrega</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- B. Notas de Entrada Subpanel -->
+      <div id="fiscal-entries-subpanel" class="fiscal-subpanel">
+        <div class="card-table-wrap">
+          <div class="table-header-row">
+            <div class="table-search-bar">
+              <input type="search" id="entry-invoice-search" class="input-search" placeholder="Filtrar notas de entrada..." oninput="app.renderEntriesTable()">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="app.openRestockModal()"><i class="fa-solid fa-cart-plus"></i> Restocar & Emitir Nota</button>
+          </div>
+          <div class="scroll-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cód Nota</th>
+                  <th>Nº Nota</th>
+                  <th>Data</th>
+                  <th>Fornecedor</th>
+                  <th>CFOP</th>
+                  <th>Valor Total</th>
+                  <th>Status SEFAZ</th>
+                  <th>Documento Fiscal</th>
+                </tr>
+              </thead>
+              <tbody id="entry-invoices-tbody">
+                <!-- Filled dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- C. Notas de Saída Subpanel -->
+      <div id="fiscal-exits-subpanel" class="fiscal-subpanel">
+        <div class="card-table-wrap">
+          <div class="table-header-row">
+            <div class="table-search-bar">
+              <input type="search" id="exit-invoice-search" class="input-search" placeholder="Filtrar notas de saída..." oninput="app.renderExitsTable()">
+            </div>
+          </div>
+          <div class="scroll-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cód Nota</th>
+                  <th>Nº Nota</th>
+                  <th>Data</th>
+                  <th>Cliente Destinatário</th>
+                  <th>CFOP</th>
+                  <th>Valor Total</th>
+                  <th>Status SEFAZ</th>
+                  <th>Documento Fiscal</th>
+                </tr>
+              </thead>
+              <tbody id="exit-invoices-tbody">
+                <!-- Filled dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- D. Regras de Incentivo SP Subpanel -->
+      <div id="fiscal-settings-subpanel" class="fiscal-subpanel">
+        <div class="card-table-wrap" style="line-height: 1.6;">
+          <h3 style="margin-bottom: 16px;"><i class="fa-solid fa-gavel"></i> Isenções Tributárias Estaduais (São Paulo)</h3>
+          <p style="margin-bottom: 12px;">Para empresas do comércio varejista registradas em São Paulo como Simples Nacional (como o <strong>Rancho Orgânico</strong>), aplicam-se os seguintes benefícios fiscais:</p>
+          <ul style="margin-left: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <li><strong>Isenção do ICMS (Decreto 45.490/00 - RICMS/SP Anexo I, Artigo 36):</strong> Fica isenta a circulação de verduras, legumes, e frutas frescas. No cálculo do Simples Nacional mensal, a receita bruta correspondente a esses itens é deduzida da parcela do ICMS, reduzindo a alíquota da primeira faixa de 6.0% para 3.96% efetiva.</li>
+            <li><strong>Emissão de Contra-Nota (CFOP 1.122 / 1.102):</strong> Pequenos produtores da horta familiar local que não emitem nota eletrônica recebem a Nota Fiscal de Entrada emitida pelo Rancho Orgânico, registrando a operação perante a SEFAZ/SP com CSOSN 400 (Isento do Simples).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. INTEGRATIONS HUB VIEW -->
+    <section id="integrations-view" class="view-panel">
+      <div class="view-header">
+        <h1>Hub de Integrações de Vendas</h1>
+      </div>
+
+      <div class="integration-list">
+        <!-- iFood Integration Card -->
+        <div class="integration-card">
+          <div class="integration-head">
+            <div class="integration-brand">
+              <div class="integration-brand-logo ifood-logo"><i class="fa-solid fa-bowl-food"></i></div>
+              <div>
+                <h3 style="font-family: 'Outfit', sans-serif;">iFood</h3>
+                <span class="store-subtitle" id="ifood-sync-status">Sincronizado: 2 min atrás</span>
+              </div>
+            </div>
+            <div class="integration-status">
+              <span id="ifood-status-dot" class="status-dot active"></span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="ifood-toggle" checked onchange="app.toggleIntegration('ifood')">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="integration-body">
+            <p>Sincronize seu catálogo de vegetais, frutas e legumes orgânicos diretamente com a maior plataforma de delivery de alimentos do Brasil.</p>
+            <div class="webhook-simulator">
+              <h4>Simulador de Pedidos iFood</h4>
+              <button class="btn btn-secondary btn-sm" onclick="app.simulateIncomingOrder('iFood')">
+                <i class="fa-solid fa-gamepad"></i> Disparar Pedido de Teste
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CardapioFacil Integration Card -->
+        <div class="integration-card">
+          <div class="integration-head">
+            <div class="integration-brand">
+              <div class="integration-brand-logo cardapiofacil-logo"><i class="fa-solid fa-book-open"></i></div>
+              <div>
+                <h3 style="font-family: 'Outfit', sans-serif;">CardapioFacil</h3>
+                <span class="store-subtitle" id="cardapiofacil-sync-status">Sincronizado: 10 min atrás</span>
+              </div>
+            </div>
+            <div class="integration-status">
+              <span id="cardapiofacil-status-dot" class="status-dot active"></span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="cardapiofacil-toggle" checked onchange="app.toggleIntegration('cardapiofacil')">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="integration-body">
+            <p>Plataforma para pedidos diretos por catálogo web. Os clientes escaneiam QR codes nas mesas ou acessam o link direto do menu da fazenda.</p>
+            <div class="webhook-simulator">
+              <h4>Simulador de Pedidos CardapioFacil</h4>
+              <button class="btn btn-secondary btn-sm" onclick="app.simulateIncomingOrder('CardapioFacil')">
+                <i class="fa-solid fa-gamepad"></i> Disparar Pedido de Teste
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp AI Customer Service Badge -->
+        <div class="integration-card">
+          <div class="integration-head">
+            <div class="integration-brand">
+              <div class="integration-brand-logo whatsapp-logo"><i class="fa-brands fa-whatsapp"></i></div>
+              <div>
+                <h3 style="font-family: 'Outfit', sans-serif;">Atendente de WhatsApp IA</h3>
+                <span class="store-subtitle">Agente Inteligente Ativo</span>
+              </div>
+            </div>
+            <div class="integration-status">
+              <span id="whatsapp-status-dot" class="status-dot active"></span>
+              <label class="switch-toggle">
+                <input type="checkbox" id="whatsapp-toggle" checked onchange="app.toggleIntegration('whatsapp')">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="integration-body">
+            <p>Robô inteligente treinado especificamente nos preços, estoques e rotas de entrega da sua horta de produtos saudáveis orgânicos.</p>
+            <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="app.switchView('whatsapp-ai')">
+              <i class="fa-solid fa-robot"></i> Abrir Painel da IA
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. WHATSAPP & AI WORKSPACE VIEW -->
+    <section id="whatsapp-ai-view" class="view-panel">
+      <div class="view-header">
+        <h1>Painel de Atendimento & IA de Vendas</h1>
+      </div>
+
+      <div class="whatsapp-container">
+        <!-- Active Chats Sidebar -->
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-search">
+            <input type="search" id="chat-search" class="input-search" placeholder="Pesquisar conversa..." oninput="app.filterChats()">
+          </div>
+          <div class="chats-list" id="chats-list-container">
+            <!-- Chats populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Live Chat Main Box -->
+        <div class="chat-screen">
+          <div class="chat-screen-header">
+            <div class="chat-user-profile">
+              <div class="chat-thumb-avatar" id="active-chat-avatar-wrapper" style="background-color: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div>
+                <div class="chat-user-name" id="active-chat-name">Selecione uma conversa</div>
+                <div class="chat-user-status" id="active-chat-status">
+                  <!-- Dynamic status -->
+                </div>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-secondary btn-sm" id="btn-toggle-ai-active" onclick="app.toggleChatAI()">
+                <i class="fa-solid fa-robot"></i> Desativar IA
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages Scroll -->
+          <div class="chat-messages-area" id="chat-messages-area">
+            <!-- Messages rendered dynamically -->
+          </div>
+
+          <!-- Message Form Input -->
+          <div class="chat-input-area">
+            <input type="text" id="chat-input-field" class="chat-input-field" placeholder="Escreva uma resposta manual..." onkeydown="app.handleChatKeyDown(event)">
+            <button class="btn btn-primary" onclick="app.sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+
+        <!-- AI Prompt Configurations Panel -->
+        <div class="chat-settings-panel">
+          <h3>Configuração da IA</h3>
+          
+          <div class="form-group">
+            <label for="ai-model-select">Modelo de IA</label>
+            <select id="ai-model-select" class="form-control" onchange="app.saveAIConfig()">
+              <option value="Gemini 1.5 Flash">Gemini 1.5 Flash (Recomendado)</option>
+              <option value="Gemini 1.5 Pro">Gemini 1.5 Pro</option>
+              <option value="GPT-4o-mini">GPT-4o Mini</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ai-prompt-editor">Instruções de Personalidade (System Prompt)</label>
+            <textarea id="ai-prompt-editor" class="prompt-textarea" oninput="app.saveAIConfig()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="switch-toggle" style="display: flex; align-items: center; gap: 12px; width: auto; height: auto;">
+              <input type="checkbox" id="ai-autoreply-toggle" onchange="app.saveAIConfig()">
+              <span class="slider" style="position: relative; display: inline-block; width: 46px; height: 24px; vertical-align: middle;"></span>
+              <span style="font-size: 0.85rem; font-weight: 500;">Responder novas mensagens automaticamente</span>
+            </label>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <h4 style="font-size: 0.85rem; margin-bottom: 8px;">Dica de Vendas da IA:</h4>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4;">
+              O prompt ao lado ensina a IA a sugerir produtos orgânicos com estoque alto ou shelf life curto para evitar desperdício de estoque sensível.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- I. STORE CONFIGURATIONS VIEW -->
+    <section id="store-settings-view" class="view-panel">
+      <div class="view-header">
+        <h1>Configurações da Loja & Experiência</h1>
+        <p>Personalize os layouts visuais, temas de cores, comportamentos e menus de navegação mobile.</p>
+      </div>
+
+      <div class="card" style="max-width: 650px;">
+        <h2 style="font-size: 1.15rem; margin-bottom: 20px; color: var(--accent-primary);">Experiência do Catálogo Online</h2>
+        <form id="store-settings-form" onsubmit="app.saveStoreConfig(event)">
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="config-nav-type" style="font-weight: 600; display: block; margin-bottom: 8px;">Navegação por Categorias no Mobile</label>
+            <select id="config-nav-type" class="form-control" style="width: 100%; max-width: 400px;" required>
+              <option value="footer">Abas Fixas no Rodapé (Sticky Footer)</option>
+              <option value="header-dropdown">Menu Dropdown Fixo no Topo (Header Select)</option>
+            </select>
+            <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+              Define se as abas horizontais de categorias colam no rodapé ou viram um seletor dropdown elegante no cabeçalho em telas menores.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="config-catalog-layout" style="font-weight: 600; display: block; margin-bottom: 8px;">Visualização de Produtos</label>
+            <select id="config-catalog-layout" class="form-control" style="width: 100%; max-width: 400px;" required>
+              <option value="grid">Grade de Cards Modelares (Grid)</option>
+              <option value="list">Lista Detalhada com Imagem à Esquerda (List)</option>
+            </select>
+            <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+              Configura o estilo de UX da loja virtual para os clientes.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="config-cart-behavior" style="font-weight: 600; display: block; margin-bottom: 8px;">Comportamento ao Adicionar Item</label>
+            <select id="config-cart-behavior" class="form-control" style="width: 100%; max-width: 400px;" required>
+              <option value="auto-open">Abrir sacola de compras automaticamente</option>
+              <option value="manual">Apenas incrementar contador e manter sacola oculta</option>
+            </select>
+            <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+              Melhora a experiência de checkout ágil ou compra continuada.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label for="config-store-theme" style="font-weight: 600; display: block; margin-bottom: 8px;">Tema de Cores & UX da Loja</label>
+            <select id="config-store-theme" class="form-control" style="width: 100%; max-width: 400px;" required>
+              <option value="warm-lime">Rancho Lima (Verde Lima Claro)</option>
+              <option value="forest-emerald">Floresta Imperial (Verde Esmeralda Premium)</option>
+              <option value="peach-cream">Pêssego Natural (Creme & Pêssego Vintage)</option>
+              <option value="dark-charcoal">Rancho Dark (Tema Noturno)</option>
+            </select>
+            <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+              Altera as cores de acento, contrastes e fundos de toda a interface do e-commerce do cliente.
+            </small>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NATIVE MODAL DIALOGS -->
+
+  <!-- A. PRODUCT MODAL -->
+  <dialog id="product-modal">
+    <h2 id="product-modal-title">Novo Produto</h2>
+    <form method="dialog" id="product-form">
+      <input type="hidden" id="product-id-field">
+      <fieldset>
+        <div class="form-group">
+          <label for="form-p-name">Nome do Produto *</label>
+          <input type="text" id="form-p-name" class="form-control" placeholder="Ex: Alface Americana Orgânica" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-p-category">Categoria</label>
+            <input type="text" id="form-p-category" class="form-control" list="categories-list" placeholder="Digite ou escolha..." required>
+            <datalist id="categories-list"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="form-p-unit">Unidade de Medida</label>
+            <select id="form-p-unit" class="form-control">
+              <option value="Maço">Maço</option>
+              <option value="Kg">Kg</option>
+              <option value="Bandeja 250g">Bandeja 250g</option>
+              <option value="Bandeja 300g">Bandeja 300g</option>
+              <option value="Pote 500g">Pote 500g</option>
+              <option value="Dúzia">Dúzia</option>
+              <option value="Unidade">Unidade</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-p-stock">Quantidade em Estoque *</label>
+            <input type="number" id="form-p-stock" class="form-control" step="0.1" placeholder="Ex: 25" required>
+          </div>
+          <div class="form-group">
+            <label for="form-p-expiration">Data de Validade *</label>
+            <input type="date" id="form-p-expiration" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-p-cost">Custo Unitário (R$) *</label>
+            <input type="number" id="form-p-cost" class="form-control" step="0.01" placeholder="Ex: 1.50" required>
+          </div>
+          <div class="form-group">
+            <label for="form-p-price">Preço de Venda (R$) *</label>
+            <input type="number" id="form-p-price" class="form-control" step="0.01" placeholder="Ex: 4.50" required>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-p-cert">Certificação Orgânica</label>
+            <select id="form-p-cert" class="form-control">
+              <option value="Certificado">Certificado</option>
+              <option value="Em Transição">Em Transição</option>
+              <option value="Não Certificado">Não Certificado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="form-p-supplier">Fornecedor Principal</label>
+            <select id="form-p-supplier" class="form-control">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2" style="margin-top: 12px;">
+          <div class="form-group">
+            <label for="form-p-image">URL da Foto do Produto</label>
+            <input type="text" id="form-p-image" class="form-control" placeholder="Ex: https://images.unsplash.com/...">
+          </div>
+          <div class="form-group">
+            <label for="form-p-video">URL do Vídeo Demonstrativo</label>
+            <input type="text" id="form-p-video" class="form-control" placeholder="Ex: https://example.com/video.mp4">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeProductModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar Produto</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- B. CUSTOMER MODAL -->
+  <dialog id="customer-modal">
+    <h2 id="customer-modal-title">Novo Cliente</h2>
+    <form method="dialog" id="customer-form">
+      <input type="hidden" id="customer-id-field">
+      <fieldset>
+        <div class="form-group">
+          <label for="form-c-name">Nome Completo *</label>
+          <input type="text" id="form-c-name" class="form-control" placeholder="Ex: Mariana Souza" required>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-c-phone">Telefone *</label>
+            <input type="text" id="form-c-phone" class="form-control" placeholder="Ex: (11) 98888-7777" required>
+          </div>
+          <div class="form-group">
+            <label for="form-c-email">E-mail *</label>
+            <input type="email" id="form-c-email" class="form-control" placeholder="Ex: mariana@email.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="form-c-address">Endereço Principal de Entrega *</label>
+          <input type="text" id="form-c-address" class="form-control" placeholder="Rua, número, complemento, bairro, cidade - UF" required>
+        </div>
+        <div class="form-group">
+          <label for="form-c-doc">CPF ou CNPJ *</label>
+          <input type="text" id="form-c-doc" class="form-control" placeholder="Ex: 123.456.789-00 ou 12.345.678/0001-90" required>
+        </div>
+      </fieldset>
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeCustomerModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- C. SUPPLIER MODAL -->
+  <dialog id="supplier-modal">
+    <h2 id="supplier-modal-title">Novo Fornecedor</h2>
+    <form method="dialog" id="supplier-form">
+      <input type="hidden" id="supplier-id-field">
+      <fieldset>
+        <div class="form-group">
+          <label for="form-s-name">Razão Social / Nome da Fazenda *</label>
+          <input type="text" id="form-s-name" class="form-control" placeholder="Ex: Sítio São José Orgânicos" required>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-s-person">Responsável Comercial *</label>
+            <input type="text" id="form-s-person" class="form-control" placeholder="Ex: Seu José" required>
+          </div>
+          <div class="form-group">
+            <label for="form-s-cert">Selo de Auditoria</label>
+            <select id="form-s-cert" class="form-control">
+              <option value="Participativo">OPAC / Participativo</option>
+              <option value="Auditoria">Certificação por Auditoria</option>
+              <option value="Cadastrado">Cadastro OCS (Venda Direta)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-s-phone">Telefone *</label>
+            <input type="text" id="form-s-phone" class="form-control" placeholder="Ex: (15) 99999-8888" required>
+          </div>
+          <div class="form-group">
+            <label for="form-s-email">E-mail *</label>
+            <input type="email" id="form-s-email" class="form-control" placeholder="Ex: jose@sitiosaojose.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="form-s-address">Endereço / Localização da Propriedade *</label>
+          <input type="text" id="form-s-address" class="form-control" placeholder="Estrada Rural, Km..." required>
+        </div>
+        <div class="form-group">
+          <label for="form-s-products">Categorias Fornecidas (Separadas por vírgula) *</label>
+          <input type="text" id="form-s-products" class="form-control" placeholder="Ex: Verduras, Legumes, Folhas" required>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="form-s-cnpj">CNPJ *</label>
+            <input type="text" id="form-s-cnpj" class="form-control" placeholder="Ex: 12.345.678/0001-90" required>
+          </div>
+          <div class="form-group">
+            <label for="form-s-ie">Inscrição Estadual (IE) *</label>
+            <input type="text" id="form-s-ie" class="form-control" placeholder="Ex: 354.123.456.789 ou ISENTO" required>
+          </div>
+        </div>
+      </fieldset>
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeSupplierModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar Fornecedor</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- C2. CUSTOMER DETAIL MODAL (INSIGHTS & STATISTICS) -->
+  <dialog id="customer-detail-modal" style="max-width: 850px; width: 95%; padding: 24px; border-radius: var(--radius-lg); border: none; box-shadow: var(--shadow-dark); background-color: var(--bg-secondary);">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
+      <h2 style="font-family: 'Outfit', sans-serif; margin: 0; color: var(--text-primary);"><i class="fa-solid fa-address-card" style="color: var(--accent-primary);"></i> Detalhes & Estatísticas do Cliente</h2>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('customer-detail-modal').close()"><i class="fa-solid fa-xmark"></i> Fechar</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1.2fr 2fr; gap: 24px;">
+      <!-- Client Info Card -->
+      <div style="background-color: var(--bg-primary); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color); height: fit-content;">
+        <h3 id="detail-c-name" style="font-family: 'Outfit', sans-serif; margin-bottom: 8px; font-size: 1.25rem; color: var(--text-primary);">Nome do Cliente</h3>
+        <span id="detail-c-status" class="badge badge-success" style="margin-bottom: 16px; display: inline-block;">Ativo</span>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+          <div>
+            <span style="font-weight: 600; color: var(--text-muted); display: block;">CPF / CNPJ:</span>
+            <span id="detail-c-doc" style="color: var(--text-primary);">-</span>
+          </div>
+          <div>
+            <span style="font-weight: 600; color: var(--text-muted); display: block;">Telefone:</span>
+            <span id="detail-c-phone" style="color: var(--text-primary);">-</span>
+          </div>
+          <div>
+            <span style="font-weight: 600; color: var(--text-muted); display: block;">E-mail:</span>
+            <span id="detail-c-email" style="color: var(--text-primary);">-</span>
+          </div>
+          <div>
+            <span style="font-weight: 600; color: var(--text-muted); display: block;">Endereço de Entrega:</span>
+            <span id="detail-c-address" style="color: var(--text-primary);">-</span>
+          </div>
+          <div>
+            <span style="font-weight: 600; color: var(--text-muted); display: block;">Cadastro em:</span>
+            <span id="detail-c-date" style="color: var(--text-primary);">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats and History -->
+      <div>
+        <!-- Stat Counters Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; margin-bottom: 4px;">Total Comprado</span>
+            <span id="detail-c-spent" style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--accent-primary);">R$ 0,00</span>
+          </div>
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; margin-bottom: 4px;">Nº Pedidos</span>
+            <span id="detail-c-count" style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">0</span>
+          </div>
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; margin-bottom: 4px;">Ticket Médio</span>
+            <span id="detail-c-avg" style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Advanced statistics -->
+        <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; font-size: 0.85rem; display: flex; justify-content: space-between; gap: 16px;">
+          <div>
+            <span style="color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px;"><i class="fa-solid fa-basket-shopping"></i> Preferência Alimentar</span>
+            <span id="detail-c-pref" style="font-weight: bold; font-size: 0.95rem; color: var(--text-primary);">-</span>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px;"><i class="fa-solid fa-piggy-bank"></i> Economia Tributária (Simples SP)</span>
+            <span id="detail-c-saving" style="font-weight: bold; font-size: 0.95rem; color: var(--color-success);">-</span>
+          </div>
+        </div>
+
+        <!-- Order History list -->
+        <h4 style="font-family: 'Outfit', sans-serif; margin-bottom: 10px; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; color: var(--text-primary);"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Pedidos</h4>
+        <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+          <table class="table" style="font-size: 0.8rem; margin: 0; border: none;">
+            <thead style="position: sticky; top: 0; background-color: var(--bg-primary); z-index: 10;">
+              <tr>
+                <th>Nota / ID</th>
+                <th>Data</th>
+                <th>Total</th>
+                <th>Canal</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="detail-c-orders">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- D. RESTOCK / EMITIR NOTA DE ENTRADA MODAL -->
+  <dialog id="restock-modal">
+    <h2>Emitir Nota Fiscal de Entrada (Compra / Restoque)</h2>
+    <form method="dialog" id="restock-form">
+      <fieldset>
+        <div class="form-group">
+          <label for="restock-supplier-select">Fornecedor *</label>
+          <select id="restock-supplier-select" class="form-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="restock-product-select">Produto Orgânico *</label>
+          <select id="restock-product-select" class="form-control" onchange="app.handleRestockProductChange()" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="restock-qty-input">Quantidade Adquirida *</label>
+            <input type="number" id="restock-qty-input" class="form-control" step="0.1" placeholder="Ex: 50" required>
+          </div>
+          <div class="form-group">
+            <label for="restock-cost-input">Custo Unitário da Operação (R$) *</label>
+            <input type="number" id="restock-cost-input" class="form-control" step="0.01" placeholder="Ex: 1.80" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="restock-cfop-select">Código Fiscal da Operação (CFOP) *</label>
+          <select id="restock-cfop-select" class="form-control" required>
+            <option value="1.122">CFOP 1.122 - Compra de Produtor Rural (Interna)</option>
+            <option value="1.102">CFOP 1.102 - Compra para Comercialização (Interna)</option>
+            <option value="2.102">CFOP 2.102 - Compra de outro Estado (Interestadual)</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn btn-secondary" onclick="app.closeRestockModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Emitir Nota & Registrar Estoque</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- E. DETAILED DANFE (MODELO 55) MODAL -->
+  <dialog id="danfe-modal" class="danfe-paper-modal">
+    <div class="danfe-title-main">DOCUMENTO AUXILIAR DA NOTA FISCAL ELETRÔNICA (DANFE)</div>
+    <div id="danfe-paper-container">
+      <!-- Renders dynamically as a realistic Model 55 invoice -->
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir DANFE</button>
+      <button class="btn btn-secondary" onclick="app.closeDanfeModal()">Fechar</button>
+    </div>
+  </dialog>
+
+  <!-- F. XML VIEWER MODAL -->
+  <dialog id="xml-modal" style="max-width: 700px; width: 90%;">
+    <h2>Estrutura XML da Nota Fiscal (Simulação SEFAZ-SP)</h2>
+    <div id="xml-code-container" class="xml-container-card">
+      <!-- Rendered dynamically -->
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-secondary" onclick="app.closeXmlModal()">Fechar</button>
+    </div>
+  </dialog>
+
+  <!-- G. NOTIFICATION / SOUND EFFECT -->
+  <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
+
+  <!-- Scripts -->
+  <script src="mockData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
