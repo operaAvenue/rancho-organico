@@ -1401,8 +1401,31 @@ input:checked + .slider:before {
     width: 70px;
     padding: 16px 8px;
   }
-  .logo-text, .store-info, .sidebar-footer {
-    display: none;
+  .logo-text, .store-info, .hide-mobile {
+    display: none !important;
+  }
+  .sidebar-footer {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    width: 100% !important;
+    padding: 8px 0 !important;
+  }
+  .sidebar-footer a.btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem !important;
+    margin-bottom: 8px !important;
+  }
+  .store-badge {
+    justify-content: center !important;
+    padding: 0 !important;
+    width: auto !important;
   }
   main.main-content {
     margin-left: 70px;

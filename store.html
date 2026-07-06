@@ -50,6 +50,9 @@
       padding: 60px 40px;
       text-align: center;
       margin-bottom: 32px;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.4s ease, color 0.3s ease;
     }
 
     .store-hero h1 {
@@ -510,14 +513,20 @@
         position: fixed !important;
         bottom: 0 !important;
         left: 0 !important;
-        width: 100% !important;
+        right: 0 !important;
+        width: 100vw !important;
         background-color: var(--bg-secondary) !important;
         border-top: 1px solid var(--border-color) !important;
         padding: 12px 16px !important;
         margin: 0 !important;
-        z-index: 1000 !important;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.1) !important;
+        z-index: 9999 !important;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.12) !important;
         display: block !important;
+        box-sizing: border-box !important;
+      }
+      .mobile-category-select-wrapper.mobile-footer-dropdown-active select {
+        width: 100% !important;
+        margin: 0 !important;
       }
     }
 
@@ -551,9 +560,9 @@
   </header>
 
   <!-- Hero Header banner -->
-  <div class="store-hero">
-    <h1>Rancho Orgânico</h1>
-    <p>Do campo para a sua mesa. Produtos 100% orgânicos, cultivados com responsabilidade socioambiental e entregues frescos na sua casa.</p>
+  <div class="store-hero" id="store-hero">
+    <h1 id="store-hero-title">Rancho Orgânico</h1>
+    <p id="store-hero-subtitle">Do campo para a sua mesa. Produtos 100% orgânicos, cultivados com responsabilidade socioambiental e entregues frescos na sua casa.</p>
   </div>
 
   <!-- Main Store Content -->
@@ -715,6 +724,7 @@
           if (mobileSelect) mobileSelect.value = cat;
           setupCategories();
           renderStoreProducts();
+          updateStoreHero();
         };
         container.appendChild(btn);
       });
@@ -1048,11 +1058,55 @@
       document.getElementById("video-dialog").close();
     }
 
+    const CATEGORY_BG_IMAGES = {
+      "all": "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200",
+      "Legumes": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?q=80&w=1200",
+      "Verduras": "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=1200",
+      "Frutas": "https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?q=80&w=1200",
+      "Cereais e Farináceos": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200",
+      "Cogumelos e TOFU": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?q=80&w=1200",
+      "Sucos, bebidas e Molhos": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=1200",
+      "Laticínios, Ovos e Manteigas": "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?q=80&w=1200",
+      "Mercearia": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200",
+      "Limpeza": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200",
+      "Higiene e Cosméticos": "https://images.unsplash.com/photo-1608248597481-496100c80836?q=80&w=1200",
+      "Mel, geleias e doces": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=1200",
+      "Temperos e Especiarias": "https://images.unsplash.com/photo-1596790011460-98730c7b1d43?q=80&w=1200",
+      "Padaria": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200",
+      "Veganos e Vegetarianos": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200",
+      "Frutas Secas e Castanhas": "https://images.unsplash.com/photo-1595855759920-86582396756a?q=80&w=1200"
+    };
+
     function selectMobileCategory(val) {
       activeCategory = val;
       currentSwipeIndex = 0;
       setupCategories();
       renderStoreProducts();
+      updateStoreHero();
+    }
+
+    function updateStoreHero() {
+      const hero = document.getElementById("store-hero");
+      const heroTitle = document.getElementById("store-hero-title");
+      const heroSubtitle = document.getElementById("store-hero-subtitle");
+      if (!hero || !heroTitle || !heroSubtitle) return;
+
+      const bgUrl = CATEGORY_BG_IMAGES[activeCategory] || CATEGORY_BG_IMAGES["all"];
+      
+      // Set background image with 40% fade (60% black overlay)
+      hero.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('${bgUrl}')`;
+      
+      if (activeCategory === "all") {
+        heroTitle.textContent = "Rancho Orgânico";
+        heroTitle.style.color = "";
+        heroSubtitle.textContent = "Do campo para a sua mesa. Produtos 100% orgânicos, cultivados com responsabilidade socioambiental e entregues frescos na sua casa.";
+        heroSubtitle.style.color = "";
+      } else {
+        heroTitle.textContent = activeCategory;
+        heroTitle.style.color = "#ffffff";
+        heroSubtitle.textContent = `Confira a nossa seleção exclusiva e sustentável de ${activeCategory.toLowerCase()}.`;
+        heroSubtitle.style.color = "rgba(255, 255, 255, 0.85)";
+      }
     }
 
     // Swipe Tinder-style View rendering
@@ -1461,6 +1515,7 @@
       applyStoreConfig();
       setupCategories();
       renderStoreProducts();
+      updateStoreHero();
     });
 
     // Handle real-time sync with ERP configurations
@@ -1469,9 +1524,11 @@
         applyStoreConfig();
         setupCategories();
         renderStoreProducts();
+        updateStoreHero();
       } else if (e.key === "rancho_products") {
         setupCategories();
         renderStoreProducts();
+        updateStoreHero();
       }
     });
 
@@ -1484,6 +1541,7 @@
         applyStoreConfig();
         setupCategories();
         renderStoreProducts();
+        updateStoreHero();
       }
       lastWidth = window.innerWidth;
     });
