@@ -815,6 +815,15 @@
     let cardCurrentDeltaY = 0;
     let previousSearchQuery = "";
 
+    function saveSwipeIndex() {
+      localStorage.setItem("rancho_swipe_index_" + activeCategory, currentSwipeIndex);
+    }
+
+    function loadSwipeIndex() {
+      const stored = localStorage.getItem("rancho_swipe_index_" + activeCategory);
+      currentSwipeIndex = stored ? parseInt(stored) : 0;
+    }
+
     // Setup storefront category tabs and select dropdown
     function setupCategories() {
       const container = document.getElementById("store-category-tabs");
@@ -833,7 +842,7 @@
         btn.textContent = cat === "all" ? "Todos" : cat;
         btn.onclick = () => {
           activeCategory = cat;
-          currentSwipeIndex = 0;
+          loadSwipeIndex();
           if (mobileSelect) mobileSelect.value = cat;
           setupCategories();
           renderStoreProducts();
@@ -1205,7 +1214,7 @@
 
     function selectMobileCategory(val) {
       activeCategory = val;
-      currentSwipeIndex = 0;
+      loadSwipeIndex();
       setupCategories();
       renderStoreProducts();
       updateStoreHero();
@@ -1310,6 +1319,7 @@
 
     function resetSwipeIndex() {
       currentSwipeIndex = 0;
+      saveSwipeIndex();
       renderSwipeView();
     }
 
@@ -1415,6 +1425,7 @@
         }
         setTimeout(() => {
           currentSwipeIndex++;
+          saveSwipeIndex();
           renderSwipeView();
         }, 200);
       } else {
@@ -1465,14 +1476,18 @@
         return;
       }
 
-      // Add to cart with specified qty
-      addToStoreCartWithQty(p.id, qty);
-      
+      // 1. Close dialog
       document.getElementById("swipe-qty-dialog").close();
       
-      // Load next card
+      // 2. Load next card index and save it
       currentSwipeIndex++;
+      saveSwipeIndex();
+      
+      // 3. Render the next card immediately in the DOM behind the drawer
       renderSwipeView();
+
+      // 4. Add to cart with specified qty (which triggers the cart drawer to slide open over the new card)
+      addToStoreCartWithQty(p.id, qty);
     }
 
     function addToStoreCartWithQty(prodId, qty) {
@@ -1582,7 +1597,7 @@
         if (activeLayout === "swipe") {
           gridEl.style.display = "none";
           swipeEl.style.display = "flex";
-          currentSwipeIndex = 0; // reset index on layout switch
+          loadSwipeIndex(); // load persisted swipe index on layout switch
           renderSwipeView();
         } else {
           swipeEl.style.display = "none";
