@@ -369,12 +369,39 @@
         gap: 6px !important;
         flex-shrink: 0 !important;
       }
-      .product-grid.layout-list .store-card .store-card-footer span {
-        font-size: 1.1rem !important;
+      /* Option 1: Font reduction */
+      body.list-fix-font .product-grid.layout-list .store-card .store-card-footer span {
+        font-size: 0.95rem !important;
       }
-      .product-grid.layout-list .store-card .btn-add-cart {
+      body.list-fix-font .product-grid.layout-list .store-card .btn-add-cart {
+        padding: 4px 8px !important;
+        font-size: 0.7rem !important;
+      }
+
+      /* Option 2: Height increase */
+      body.list-fix-height .product-grid.layout-list .store-card {
+        padding: 18px 12px !important;
+        min-height: 110px !important;
+      }
+      body.list-fix-height .product-grid.layout-list .store-card .store-card-footer span {
+        font-size: 1.15rem !important;
+      }
+      body.list-fix-height .product-grid.layout-list .store-card .btn-add-cart {
         padding: 6px 12px !important;
         font-size: 0.75rem !important;
+      }
+
+      /* Option 3: Both combined */
+      body.list-fix-both .product-grid.layout-list .store-card {
+        padding: 16px 12px !important;
+        min-height: 100px !important;
+      }
+      body.list-fix-both .product-grid.layout-list .store-card .store-card-footer span {
+        font-size: 1.05rem !important;
+      }
+      body.list-fix-both .product-grid.layout-list .store-card .btn-add-cart {
+        padding: 5px 10px !important;
+        font-size: 0.72rem !important;
       }
     /* Tinder Swipe Mode Layout Styles */
     .swipe-container {
@@ -1424,7 +1451,8 @@
         mobileNavType: "footer",
         storeTheme: "warm-lime",
         catalogLayout: "grid",
-        cartBehavior: "auto-open"
+        cartBehavior: "auto-open",
+        mobileListFix: "font"
       };
       
       // A. Apply theme colors via CSS custom properties
@@ -1432,6 +1460,22 @@
 
       const isMobile = window.innerWidth <= 768;
       const activeLayout = (config.catalogLayout === "swipe" && !isMobile) ? "grid" : config.catalogLayout;
+
+      // A1. Toggle store hero visibility in swipe mode
+      const heroEl = document.getElementById("store-hero");
+      if (heroEl) {
+        if (activeLayout === "swipe") {
+          heroEl.style.display = "none";
+        } else {
+          heroEl.style.display = "";
+        }
+      }
+
+      // A2. Apply layout-list mobile fixes
+      const fixType = config.mobileListFix || "font";
+      document.body.classList.toggle("list-fix-font", fixType === "font");
+      document.body.classList.toggle("list-fix-height", fixType === "height");
+      document.body.classList.toggle("list-fix-both", fixType === "both");
 
       // B. Apply mobile navigation classes
       const categoryTabs = document.getElementById("store-category-tabs");

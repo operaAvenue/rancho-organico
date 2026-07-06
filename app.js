@@ -2116,18 +2116,21 @@ class RanchoOrganicoApp {
       mobileNavType: "footer",
       storeTheme: "warm-lime",
       catalogLayout: "grid",
-      cartBehavior: "auto-open"
+      cartBehavior: "auto-open",
+      mobileListFix: "font"
     };
     
     const navTypeEl = document.getElementById("config-nav-type");
     const catalogLayoutEl = document.getElementById("config-catalog-layout");
     const cartBehaviorEl = document.getElementById("config-cart-behavior");
     const storeThemeEl = document.getElementById("config-store-theme");
+    const mobileListFixEl = document.getElementById("config-mobile-list-fix");
     
     if (navTypeEl) navTypeEl.value = config.mobileNavType || "footer";
     if (catalogLayoutEl) catalogLayoutEl.value = config.catalogLayout || "grid";
     if (cartBehaviorEl) cartBehaviorEl.value = config.cartBehavior || "auto-open";
     if (storeThemeEl) storeThemeEl.value = config.storeTheme || "warm-lime";
+    if (mobileListFixEl) mobileListFixEl.value = config.mobileListFix || "font";
   }
 
   saveStoreConfig(event) {
@@ -2137,7 +2140,8 @@ class RanchoOrganicoApp {
       mobileNavType: document.getElementById("config-nav-type").value,
       catalogLayout: document.getElementById("config-catalog-layout").value,
       cartBehavior: document.getElementById("config-cart-behavior").value,
-      storeTheme: document.getElementById("config-store-theme").value
+      storeTheme: document.getElementById("config-store-theme").value,
+      mobileListFix: document.getElementById("config-mobile-list-fix").value
     };
     
     window.db.save("store_config", config);
