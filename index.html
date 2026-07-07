@@ -1231,6 +1231,28 @@
   <!-- G. NOTIFICATION / SOUND EFFECT -->
   <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/951/951-84.wav" preload="auto"></audio>
 
+  <!-- H. ADMIN LOGIN OVERLAY -->
+  <div id="admin-login-overlay" style="display: flex;">
+    <div class="login-card">
+      <div class="login-logo-container">
+        <div class="login-logo-icon"><i class="fa-solid fa-leaf"></i></div>
+        <h1 class="login-logo-text">Rancho Orgânico</h1>
+      </div>
+      <p class="login-description">Painel Administrativo ERP. Faça login para gerenciar o estoque, vendas, notas fiscais e configurações da loja virtual.</p>
+      
+      <div id="login-error-msg" class="login-error-badge" style="display: none;"></div>
+      
+      <button id="admin-google-login-btn" class="login-google-btn">
+        <i class="fa-brands fa-google"></i>
+        <span>Entrar com o Google</span>
+      </button>
+      
+      <div class="login-footer">
+        Acesso restrito à conta administradora cadastrada.
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="mockData.js"></script>
   <script src="app.js"></script>

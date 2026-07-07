@@ -1104,18 +1104,9 @@
       currentUser = null;
     }
 
-    // Configuração do Firebase (Caso queira integrar com chaves reais)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
+    const firebaseConfig = window.firebaseConfig;
     let firebaseAuth = null;
-    const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+    const isFirebaseConfigured = window.isFirebaseConfigured;
 
     if (isFirebaseConfigured) {
       Promise.all([
@@ -2246,13 +2237,26 @@
 
     // Initialize Storefront page
     window.addEventListener("DOMContentLoaded", () => {
-      applyStoreConfig();
-      setupCategories();
-      renderStoreProducts();
-      updateStoreHero();
-      updateCartBadge();
-      renderCartDrawer();
-      updateAuthUI();
+      const initStore = () => {
+        applyStoreConfig();
+        setupCategories();
+        renderStoreProducts();
+        updateStoreHero();
+        updateCartBadge();
+        renderCartDrawer();
+        updateAuthUI();
+      };
+
+      if (window.db && window.db.syncPromise) {
+        window.db.syncPromise.then(() => {
+          initStore();
+        }).catch(err => {
+          console.error("Erro na inicialização com Firestore:", err);
+          initStore();
+        });
+      } else {
+        initStore();
+      }
     });
 
     // Handle real-time sync with ERP configurations
@@ -2266,6 +2270,13 @@
         setupCategories();
         renderStoreProducts();
         updateStoreHero();
+      } else if (e.key === "rancho_user") {
+        try {
+          currentUser = JSON.parse(localStorage.getItem("rancho_user")) || null;
+        } catch(err) {
+          currentUser = null;
+        }
+        updateAuthUI();
       }
     });
 

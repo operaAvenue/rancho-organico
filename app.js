@@ -17,6 +17,7 @@ class RanchoOrganicoApp {
   }
 
   init() {
+    this.initAuthGuard();
     this.setupViewRouter();
     this.setupDateBadge();
     this.setupFormSubmits();
@@ -38,6 +39,251 @@ class RanchoOrganicoApp {
     this.loadAIConfigUI();
     this.setupGlobalBarcodeListener();
     this.setupStorageListener();
+  }
+
+  initAuthGuard() {
+    const overlay = document.getElementById("admin-login-overlay");
+    const loginBtn = document.getElementById("admin-google-login-btn");
+    const errorMsg = document.getElementById("login-error-msg");
+
+    if (loginBtn) {
+      loginBtn.addEventListener("click", () => this.handleAdminLogin());
+    }
+
+    if (window.isFirebaseConfigured) {
+      Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js")
+      ]).then(([{ initializeApp }, { getAuth, onAuthStateChanged }]) => {
+        const app = initializeApp(window.firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            if (user.email === "ojoaodesantocristo@gmail.com") {
+              if (overlay) overlay.style.display = "none";
+              if (errorMsg) errorMsg.style.display = "none";
+            } else {
+              import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js").then(({ signOut }) => {
+                signOut(auth).then(() => {
+                  if (overlay) overlay.style.display = "flex";
+                  if (errorMsg) {
+                    errorMsg.textContent = "Acesso Negado: A conta '" + user.email + "' não possui permissões administrativas.";
+                    errorMsg.style.display = "block";
+                  }
+                });
+              });
+            }
+          } else {
+            if (overlay) overlay.style.display = "flex";
+          }
+        });
+      }).catch(err => {
+        console.error("Erro ao carregar Firebase Auth:", err);
+      });
+    } else {
+      // Simulator Fallback Mode
+      const checkLocalSession = () => {
+        const userSession = JSON.parse(localStorage.getItem("rancho_user"));
+        if (userSession && userSession.email === "ojoaodesantocristo@gmail.com") {
+          if (overlay) overlay.style.display = "none";
+        } else {
+          if (overlay) overlay.style.display = "flex";
+        }
+      };
+
+      checkLocalSession();
+
+      // Listen for updates from other tabs/storefront or storage events
+      window.addEventListener("storage", checkLocalSession);
+
+      window.addEventListener("message", (event) => {
+        if (event.data && event.data.type === "GOOGLE_SIGN_IN_SIMULATOR_SUCCESS") {
+          const user = event.data.user;
+          if (user.email === "ojoaodesantocristo@gmail.com") {
+            localStorage.setItem("rancho_user", JSON.stringify(user));
+            if (overlay) overlay.style.display = "none";
+            if (errorMsg) errorMsg.style.display = "none";
+            window.dispatchEvent(new Event("storage"));
+          } else {
+            localStorage.removeItem("rancho_user");
+            if (overlay) overlay.style.display = "flex";
+            if (errorMsg) {
+              errorMsg.textContent = "Acesso Negado: A conta '" + user.email + "' (Simulada) não possui permissões administrativas.";
+              errorMsg.style.display = "block";
+            }
+            window.dispatchEvent(new Event("storage"));
+          }
+        }
+      });
+    }
+  }
+
+  async handleAdminLogin() {
+    const errorMsg = document.getElementById("login-error-msg");
+    if (errorMsg) errorMsg.style.display = "none";
+
+    if (window.isFirebaseConfigured) {
+      try {
+        const [{ initializeApp }, { getAuth, GoogleAuthProvider, signInWithPopup }] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js")
+        ]);
+        const app = initializeApp(window.firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        if (errorMsg) {
+          errorMsg.textContent = "Erro ao fazer login: " + err.message;
+          errorMsg.style.display = "block";
+        }
+      }
+    } else {
+      const width = 450;
+      const height = 600;
+      const left = (window.screen.width / 2) - (width / 2);
+      const top = (window.screen.height / 2) - (height / 2);
+      
+      const popup = window.open("", "Google Sign-In Simulator", `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+      
+      if (popup) {
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html lang="pt-BR">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Fazer login com as Contas do Google</title>
+            <style>
+              body {
+                font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                background-color: #ffffff;
+                margin: 0;
+                padding: 40px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: #202124;
+              }
+              .card {
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                max-width: 400px;
+                width: 100%;
+                padding: 40px 30px;
+                box-sizing: border-box;
+                text-align: center;
+              }
+              .logo {
+                width: 75px;
+                margin-bottom: 16px;
+              }
+              h1 {
+                font-size: 24px;
+                font-weight: 400;
+                margin: 0 0 8px 0;
+                color: #202124;
+              }
+              p {
+                font-size: 16px;
+                color: #5f6368;
+                margin: 0 0 30px 0;
+              }
+              .account-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #dadce0;
+                cursor: pointer;
+                text-align: left;
+                width: 100%;
+                background: none;
+                border-top: none;
+                border-left: none;
+                border-right: none;
+              }
+              .account-item:hover {
+                background-color: #f8f9fa;
+              }
+              .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                margin-right: 12px;
+                background-color: #4d7c0f;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+              }
+              .account-info {
+                flex-grow: 1;
+              }
+              .name {
+                font-size: 14px;
+                font-weight: 500;
+                color: #3c4043;
+              }
+              .email {
+                font-size: 12px;
+                color: #5f6368;
+              }
+              .footer {
+                margin-top: 30px;
+                font-size: 11px;
+                color: #5f6368;
+                line-height: 1.4;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+              <h1>Escolha uma conta</h1>
+              <p>para continuar no Rancho Orgânico</p>
+              
+              <button class="account-item" onclick="selectAccount('João de Santo Cristo', 'ojoaodesantocristo@gmail.com', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80')">
+                <div class="avatar" style="background-color: #4d7c0f;">J</div>
+                <div class="account-info">
+                  <div class="name">João de Santo Cristo (Admin)</div>
+                  <div class="email">ojoaodesantocristo@gmail.com</div>
+                </div>
+              </button>
+
+              <button class="account-item" onclick="selectAccount('Maria Silva', 'mariasilva@gmail.com', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=80')">
+                <div class="avatar" style="background-color: #0369a1;">M</div>
+                <div class="account-info">
+                  <div class="name">Maria Silva (Cliente/Visitante)</div>
+                  <div class="email">mariasilva@gmail.com</div>
+                </div>
+              </button>
+              
+              <div class="footer">
+                Para continuar, o Google compartilhará seu nome, endereço de e-mail, foto do perfil e preferência de idioma com o Rancho Orgânico.
+              </div>
+            </div>
+
+            <script>
+              function selectAccount(name, email, photo) {
+                window.opener.postMessage({
+                  type: 'GOOGLE_SIGN_IN_SIMULATOR_SUCCESS',
+                  user: {
+                    uid: 'mock-' + Math.random().toString(36).substr(2, 9),
+                    displayName: name,
+                    email: email,
+                    photoURL: photo
+                  }
+                }, '*');
+                window.close();
+              }
+            <\/script>
+          </body>
+          </html>
+        `);
+      }
+    }
   }
 
   // SPA View Routing
@@ -2159,5 +2405,14 @@ window.app = app;
 
 // Initialize on page load
 window.addEventListener("DOMContentLoaded", () => {
-  app.init();
+  if (window.db && window.db.syncPromise) {
+    window.db.syncPromise.then(() => {
+      app.init();
+    }).catch(err => {
+      console.error("Erro na inicialização com Firestore:", err);
+      app.init(); // fallback
+    });
+  } else {
+    app.init();
+  }
 });

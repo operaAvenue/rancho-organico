@@ -1,5 +1,15 @@
 // Rancho Orgânico Mock Database & State Management
 
+window.firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+window.isFirebaseConfigured = window.firebaseConfig.apiKey !== "YOUR_API_KEY";
+
 const DEFAULT_PRODUCTS = [
   { id: "P001", name: "Alface Crespa Orgânica", category: "Verduras", stock: 24, unit: "Maço", cost: 1.8, price: 4.5, expirationDate: "2026-07-28", organicCert: "Certificado", supplierId: "S001", ncm: "0705.11.00", barcode: "7891020304012", imageUrl: "https://images.unsplash.com/photo-1556801712-76c8eb07bbc9?w=400", videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4" },
   { id: "P002", name: "Tomate Cereja Orgânico", category: "Legumes", stock: 15, unit: "Bandeja 250g", cost: 3.2, price: 7.9, expirationDate: "2026-07-29", organicCert: "Certificado", supplierId: "S002", ncm: "0702.00.00", barcode: "7891020304029", imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400", videoUrl: "" },
@@ -374,7 +384,78 @@ const DEFAULT_TAX_CONFIG = {
 
 class RanchoOrganicoDB {
   constructor() {
+    this.fs = null;
+    this.fsSdk = null;
     this.init();
+    this.syncPromise = null;
+    if (window.isFirebaseConfigured) {
+      this.syncPromise = this.initFirebase();
+    }
+  }
+
+  async initFirebase() {
+    try {
+      const [{ initializeApp }, firestoreSdk] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
+      ]);
+      const app = initializeApp(window.firebaseConfig);
+      this.fs = firestoreSdk.getFirestore(app);
+      this.fsSdk = firestoreSdk;
+      await this.syncFromFirestore();
+    } catch (err) {
+      console.error("Erro ao inicializar Firebase DB:", err);
+    }
+  }
+
+  async syncFromFirestore() {
+    if (!this.fs || !this.fsSdk) return;
+    try {
+      const collections = ["products", "customers", "suppliers", "sales", "entries", "chats", "tax_config", "store_config"];
+      for (const col of collections) {
+        if (col === "store_config" || col === "tax_config") {
+          const docRef = this.fsSdk.doc(this.fs, col, "current");
+          const docSnap = await this.fsSdk.getDoc(docRef);
+          if (docSnap.exists()) {
+            localStorage.setItem(`rancho_${col}`, JSON.stringify(docSnap.data()));
+          } else {
+            const def = JSON.parse(localStorage.getItem(`rancho_${col}`));
+            if (def) await this.fsSdk.setDoc(docRef, def);
+          }
+        } else {
+          const colRef = this.fsSdk.collection(this.fs, col);
+          const snapshot = await this.fsSdk.getDocs(colRef);
+          if (snapshot.empty) {
+            const defaults = JSON.parse(localStorage.getItem(`rancho_${col}`)) || [];
+            for (const item of defaults) {
+              const docId = item.id || null;
+              const docRef = docId ? 
+                this.fsSdk.doc(this.fs, col, docId) : 
+                this.fsSdk.doc(this.fsSdk.collection(this.fs, col));
+              if (!docId && docRef.id) item.id = docRef.id;
+              await this.fsSdk.setDoc(docRef, item);
+            }
+          } else {
+            const items = [];
+            snapshot.forEach(doc => {
+              items.push(doc.data());
+            });
+            localStorage.setItem(`rancho_${col}`, JSON.stringify(items));
+          }
+        }
+      }
+
+      // Real-time listener for configurations to sync across visitor/admin sessions
+      this.fsSdk.onSnapshot(this.fsSdk.doc(this.fs, "store_config", "current"), (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          localStorage.setItem("rancho_store_config", JSON.stringify(data));
+          window.dispatchEvent(new Event("storage"));
+        }
+      });
+    } catch (err) {
+      console.error("Erro na sincronização de coleções:", err);
+    }
   }
 
   init() {
@@ -402,6 +483,12 @@ class RanchoOrganicoDB {
 
   save(key, data) {
     localStorage.setItem(`rancho_${key}`, JSON.stringify(data));
+    if (this.fs && this.fsSdk) {
+      if (key === "store_config" || key === "tax_config") {
+        const docRef = this.fsSdk.doc(this.fs, key, "current");
+        this.fsSdk.setDoc(docRef, data).catch(console.error);
+      }
+    }
   }
 
   // Products CRUD
@@ -411,6 +498,9 @@ class RanchoOrganicoDB {
     const list = this.getProducts();
     list.push(product);
     this.saveProducts(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "products", product.id), product).catch(console.error);
+    }
   }
   updateProduct(updated) {
     const list = this.getProducts();
@@ -418,11 +508,17 @@ class RanchoOrganicoDB {
     if (index !== -1) {
       list[index] = updated;
       this.saveProducts(list);
+      if (this.fs && this.fsSdk) {
+        this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "products", updated.id), updated).catch(console.error);
+      }
     }
   }
   deleteProduct(id) {
     const list = this.getProducts().filter(p => p.id !== id);
     this.saveProducts(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.deleteDoc(this.fsSdk.doc(this.fs, "products", id)).catch(console.error);
+    }
   }
 
   // Customers CRUD
@@ -432,6 +528,9 @@ class RanchoOrganicoDB {
     const list = this.getCustomers();
     list.push(customer);
     this.saveCustomers(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "customers", customer.id), customer).catch(console.error);
+    }
   }
   updateCustomer(updated) {
     const list = this.getCustomers();
@@ -439,11 +538,17 @@ class RanchoOrganicoDB {
     if (index !== -1) {
       list[index] = updated;
       this.saveCustomers(list);
+      if (this.fs && this.fsSdk) {
+        this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "customers", updated.id), updated).catch(console.error);
+      }
     }
   }
   deleteCustomer(id) {
     const list = this.getCustomers().filter(c => c.id !== id);
     this.saveCustomers(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.deleteDoc(this.fsSdk.doc(this.fs, "customers", id)).catch(console.error);
+    }
   }
 
   // Suppliers CRUD
@@ -453,6 +558,9 @@ class RanchoOrganicoDB {
     const list = this.getSuppliers();
     list.push(supplier);
     this.saveSuppliers(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "suppliers", supplier.id), supplier).catch(console.error);
+    }
   }
   updateSupplier(updated) {
     const list = this.getSuppliers();
@@ -460,11 +568,17 @@ class RanchoOrganicoDB {
     if (index !== -1) {
       list[index] = updated;
       this.saveSuppliers(list);
+      if (this.fs && this.fsSdk) {
+        this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "suppliers", updated.id), updated).catch(console.error);
+      }
     }
   }
   deleteSupplier(id) {
     const list = this.getSuppliers().filter(s => s.id !== id);
     this.saveSuppliers(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.deleteDoc(this.fsSdk.doc(this.fs, "suppliers", id)).catch(console.error);
+    }
   }
 
   // Sales CRUD
@@ -474,6 +588,9 @@ class RanchoOrganicoDB {
     const list = this.getSales();
     list.unshift(sale);
     this.saveSales(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "sales", sale.id), sale).catch(console.error);
+    }
 
     if (sale.customerId && sale.customerId !== "walk-in") {
       const customers = this.getCustomers();
@@ -482,6 +599,9 @@ class RanchoOrganicoDB {
         customers[cIndex].salesCount += 1;
         customers[cIndex].totalSpent = Number((customers[cIndex].totalSpent + sale.total).toFixed(2));
         this.saveCustomers(customers);
+        if (this.fs && this.fsSdk) {
+          this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "customers", customers[cIndex].id), customers[cIndex]).catch(console.error);
+        }
       }
     }
 
@@ -490,6 +610,9 @@ class RanchoOrganicoDB {
       const pIndex = products.findIndex(p => p.id === item.id);
       if (pIndex !== -1) {
         products[pIndex].stock = Math.max(0, Number((products[pIndex].stock - item.qty).toFixed(1)));
+        if (this.fs && this.fsSdk) {
+          this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "products", products[pIndex].id), products[pIndex]).catch(console.error);
+        }
       }
     });
     this.saveProducts(products);
@@ -502,6 +625,9 @@ class RanchoOrganicoDB {
     const list = this.getEntries();
     list.unshift(entry);
     this.saveEntries(list);
+    if (this.fs && this.fsSdk) {
+      this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "entries", entry.id), entry).catch(console.error);
+    }
 
     // Increase product stock levels
     const products = this.getProducts();
@@ -509,6 +635,9 @@ class RanchoOrganicoDB {
       const pIndex = products.findIndex(p => p.id === item.id);
       if (pIndex !== -1) {
         products[pIndex].stock = Number((products[pIndex].stock + item.qty).toFixed(1));
+        if (this.fs && this.fsSdk) {
+          this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "products", products[pIndex].id), products[pIndex]).catch(console.error);
+        }
       }
     });
     this.saveProducts(products);
@@ -529,6 +658,9 @@ class RanchoOrganicoDB {
         list[chatIndex].unread = 0;
       }
       this.saveChats(list);
+      if (this.fs && this.fsSdk) {
+        this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "chats", chatId), list[chatIndex]).catch(console.error);
+      }
     }
   }
   clearUnread(chatId) {
@@ -537,6 +669,9 @@ class RanchoOrganicoDB {
     if (chatIndex !== -1) {
       list[chatIndex].unread = 0;
       this.saveChats(list);
+      if (this.fs && this.fsSdk) {
+        this.fsSdk.setDoc(this.fsSdk.doc(this.fs, "chats", chatId), list[chatIndex]).catch(console.error);
+      }
     }
   }
 
