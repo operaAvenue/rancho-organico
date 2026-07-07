@@ -1037,8 +1037,36 @@
         
         <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
           Conectado com segurança via Firebase Auth
-        </div>
+    </div>
+  </dialog>
+
+  <!-- Complete Registration Dialog -->
+  <dialog id="registration-dialog" style="border: none; border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-dark); max-width: 360px; width: 90%; background-color: var(--bg-secondary); color: var(--text-primary); outline: none;">
+    <div class="auth-modal-content">
+      <div class="auth-brand" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--color-primary);">
+        <i class="fa-solid fa-leaf"></i>
+        <span>Rancho Orgânico</span>
       </div>
+      <h3 style="font-size: 1.2rem; margin-bottom: 6px; font-family: 'Outfit', sans-serif; color: var(--text-primary); text-align: center;">Complete seu Cadastro</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; text-align: center; margin-bottom: 20px;">
+        Para prosseguir, insira seu nome completo e telefone de contato.
+      </p>
+      
+      <form id="registration-form" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 4px; text-align: left;">
+          <label for="reg-name" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Nome Completo</label>
+          <input type="text" id="reg-name" required placeholder="Seu nome" style="padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.9rem; background-color: var(--bg-primary); color: var(--text-primary); outline: none;">
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 4px; text-align: left;">
+          <label for="reg-phone" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Telefone / WhatsApp</label>
+          <input type="tel" id="reg-phone" required placeholder="(11) 99999-9999" style="padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.9rem; background-color: var(--bg-primary); color: var(--text-primary); outline: none;">
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="margin-top: 8px; width: 100%; padding: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md);">
+          <i class="fa-solid fa-check"></i> Concluir Cadastro
+        </button>
+      </form>
     </div>
   </dialog>
 
@@ -1125,11 +1153,12 @@
               photoURL: user.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80"
             };
             localStorage.setItem("rancho_user", JSON.stringify(currentUser));
+            checkUserRegistration();
           } else {
             currentUser = null;
             localStorage.removeItem("rancho_user");
+            updateAuthUI();
           }
-          updateAuthUI();
         });
       }).catch(err => {
         console.error("Erro ao carregar SDK do Firebase:", err);
@@ -1331,7 +1360,7 @@
       if (event.data && event.data.type === "GOOGLE_SIGN_IN_SIMULATOR_SUCCESS") {
         currentUser = event.data.user;
         localStorage.setItem("rancho_user", JSON.stringify(currentUser));
-        updateAuthUI();
+        checkUserRegistration();
       }
     });
 
@@ -1343,12 +1372,14 @@
             currentUser = null;
             localStorage.removeItem("rancho_user");
             updateAuthUI();
+            window.dispatchEvent(new Event("storage"));
           });
         });
       } else {
         currentUser = null;
         localStorage.removeItem("rancho_user");
         updateAuthUI();
+        window.dispatchEvent(new Event("storage"));
       }
     }
 
@@ -1356,15 +1387,56 @@
       const profileBtn = document.getElementById("user-profile-btn");
       if (!profileBtn) return;
       
+      const nameInput = document.getElementById("store-client-name");
+      const phoneInput = document.getElementById("store-client-phone");
+      const addressInput = document.getElementById("store-client-address");
+
       if (currentUser) {
         profileBtn.innerHTML = `<img src="${currentUser.photoURL}" class="user-avatar-img" alt="${currentUser.displayName}">`;
         profileBtn.title = `Minha Conta (${currentUser.displayName})`;
         
         document.getElementById("dropdown-user-name").textContent = currentUser.displayName;
         document.getElementById("dropdown-user-email").textContent = currentUser.email;
+
+        if (nameInput && !nameInput.value) nameInput.value = currentUser.displayName;
+        if (phoneInput && !phoneInput.value) phoneInput.value = currentUser.phone || "";
+        
+        const customers = window.db.getCustomers() || [];
+        const existing = customers.find(c => c.email.toLowerCase() === currentUser.email.toLowerCase());
+        if (existing) {
+          if (addressInput && !addressInput.value) addressInput.value = existing.address || "";
+        }
       } else {
         profileBtn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
         profileBtn.title = "Minha Conta";
+
+        if (nameInput) nameInput.value = "";
+        if (phoneInput) phoneInput.value = "";
+        if (addressInput) addressInput.value = "";
+      }
+    }
+
+    function checkUserRegistration() {
+      if (!currentUser) return;
+      
+      const customers = window.db.getCustomers() || [];
+      const existing = customers.find(c => c.email.toLowerCase() === currentUser.email.toLowerCase());
+      
+      if (!existing) {
+        const regDialog = document.getElementById("registration-dialog");
+        const nameInput = document.getElementById("reg-name");
+        const phoneInput = document.getElementById("reg-phone");
+        
+        if (regDialog) {
+          if (nameInput) nameInput.value = currentUser.displayName || "";
+          if (phoneInput) phoneInput.value = "";
+          regDialog.showModal();
+        }
+      } else {
+        currentUser.displayName = existing.name;
+        currentUser.phone = existing.phone;
+        localStorage.setItem("rancho_user", JSON.stringify(currentUser));
+        updateAuthUI();
       }
     }
 
@@ -1607,21 +1679,49 @@
 
       // 1. Register Client inside database if doesn't exist
       const customers = window.db.getCustomers();
-      let customerObj = customers.find(c => c.name.toLowerCase() === name.toLowerCase() || c.phone === phone);
+      let customerObj = null;
+
+      if (currentUser) {
+        customerObj = customers.find(c => c.id === currentUser.uid || c.email.toLowerCase() === currentUser.email.toLowerCase());
+      }
+
+      if (!customerObj) {
+        customerObj = customers.find(c => c.name.toLowerCase() === name.toLowerCase() || c.phone === phone);
+      }
+
       if (!customerObj) {
         const lastIdNum = customers.length > 0 ? parseInt(customers[customers.length - 1].id.substring(1)) : 0;
         customerObj = {
-          id: `C${String(lastIdNum + 1).padStart(3, '0')}`,
+          id: currentUser ? currentUser.uid : `C${String(lastIdNum + 1).padStart(3, '0')}`,
           name: name,
           phone: phone,
-          email: `${name.toLowerCase().replace(/\s/g, '')}@loja.com`,
+          email: currentUser ? currentUser.email : `${name.toLowerCase().replace(/\s/g, '')}@loja.com`,
           address: address,
           registrationDate: new Date().toISOString().split('T')[0],
           status: "Ativo",
           salesCount: 0,
-          totalSpent: 0.00
+          totalSpent: 0.00,
+          photoURL: currentUser ? currentUser.photoURL : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80"
         };
         window.db.addCustomer(customerObj);
+      } else {
+        // Update customer details in DB
+        let changed = false;
+        if (address && customerObj.address !== address) {
+          customerObj.address = address;
+          changed = true;
+        }
+        if (name && customerObj.name !== name) {
+          customerObj.name = name;
+          changed = true;
+        }
+        if (phone && customerObj.phone !== phone) {
+          customerObj.phone = phone;
+          changed = true;
+        }
+        if (changed) {
+          window.db.updateCustomer(customerObj);
+        }
       }
 
       // 2. Register Sale Order inside Shared DB
@@ -2256,6 +2356,53 @@
         });
       } else {
         initStore();
+      }
+
+      // Registration Form Submission
+      const regForm = document.getElementById("registration-form");
+      if (regForm) {
+        regForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          if (!currentUser) return;
+          
+          const name = document.getElementById("reg-name").value.trim();
+          const phone = document.getElementById("reg-phone").value.trim();
+          
+          if (!name || !phone) {
+            alert("Por favor, preencha todos os campos.");
+            return;
+          }
+          
+          // Add to database customers list
+          const newCustomer = {
+            id: currentUser.uid,
+            name: name,
+            email: currentUser.email,
+            phone: phone,
+            address: "",
+            registrationDate: new Date().toISOString().split('T')[0],
+            status: "Ativo",
+            salesCount: 0,
+            totalSpent: 0.00,
+            photoURL: currentUser.photoURL || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=80",
+            cpf: ""
+          };
+          
+          window.db.addCustomer(newCustomer);
+          
+          // Update currentUser session
+          currentUser.displayName = name;
+          currentUser.phone = phone;
+          localStorage.setItem("rancho_user", JSON.stringify(currentUser));
+          
+          document.getElementById("registration-dialog").close();
+          updateAuthUI();
+          
+          // Notify other tabs
+          window.dispatchEvent(new Event("storage"));
+          
+          alert("Cadastro concluído com sucesso!");
+        });
       }
     });
 
