@@ -577,6 +577,12 @@ class RanchoOrganicoApp {
       });
     }
 
+    const fileInput = document.getElementById("form-p-image-file");
+    const preview = document.getElementById("form-p-image-preview");
+    const base64Input = document.getElementById("form-p-image-base64");
+    
+    if (fileInput) fileInput.value = "";
+
     if (id) {
       title.textContent = "Editar Produto Orgânico";
       const product = window.db.getProducts().find(p => p.id === id);
@@ -591,14 +597,22 @@ class RanchoOrganicoApp {
         document.getElementById("form-p-price").value = product.price;
         document.getElementById("form-p-cert").value = product.organicCert;
         document.getElementById("form-p-supplier").value = product.supplierId;
-        document.getElementById("form-p-image").value = product.imageUrl || "";
+        
+        base64Input.value = product.imageUrl || "";
+        if (product.imageUrl) {
+          preview.src = product.imageUrl;
+          preview.style.display = "block";
+        } else {
+          preview.style.display = "none";
+        }
         document.getElementById("form-p-video").value = product.videoUrl || "";
       }
     } else {
       title.textContent = "Novo Produto Orgânico";
       form.reset();
       document.getElementById("product-id-field").value = "";
-      document.getElementById("form-p-image").value = "";
+      base64Input.value = "";
+      if (preview) preview.style.display = "none";
       document.getElementById("form-p-video").value = "";
     }
     
@@ -614,6 +628,27 @@ class RanchoOrganicoApp {
     document.getElementById("customer-form").addEventListener("submit", this.handleCustomerFormSubmit);
     document.getElementById("supplier-form").addEventListener("submit", this.handleSupplierFormSubmit);
     document.getElementById("restock-form").addEventListener("submit", this.handleRestockFormSubmit);
+
+    // Listen to local photo files uploads and encode to base64
+    const fileInput = document.getElementById("form-p-image-file");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64 = event.target.result;
+            document.getElementById("form-p-image-base64").value = base64;
+            const preview = document.getElementById("form-p-image-preview");
+            if (preview) {
+              preview.src = base64;
+              preview.style.display = "block";
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
   }
 
   handleProductFormSubmit(e) {
@@ -628,7 +663,7 @@ class RanchoOrganicoApp {
     const price = Number(document.getElementById("form-p-price").value);
     const organicCert = document.getElementById("form-p-cert").value;
     const supplierId = document.getElementById("form-p-supplier").value;
-    const imageUrl = document.getElementById("form-p-image").value;
+    const imageUrl = document.getElementById("form-p-image-base64").value;
     const videoUrl = document.getElementById("form-p-video").value;
 
     const dataObj = { id, name, category, unit, stock, expirationDate, cost, price, organicCert, supplierId, ncm: "0709.99.90", imageUrl, videoUrl };

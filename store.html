@@ -1000,7 +1000,11 @@
     <div style="background-color: var(--bg-secondary); padding: 16px; position: relative;">
       <h3 id="video-dialog-title" style="margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-size: 1.1rem; padding-right: 40px; color: var(--text-primary);">Vídeo do Produto</h3>
       <button onclick="closeVideoModal()" style="position: absolute; right: 16px; top: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
-      <video id="video-player" controls style="width: 100%; border-radius: var(--radius-md); background: #000; height: 280px;"></video>
+      <div id="video-player-container" style="width: 100%; height: 280px; border-radius: var(--radius-md); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;">
+        <video id="video-player" controls style="width: 100%; height: 100%; display: none;"></video>
+        <iframe id="youtube-player" style="width: 100%; height: 100%; border: none; display: none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
   </dialog>
 
   <!-- Swipe Quantity Dialog -->
@@ -1832,18 +1836,45 @@
       window.location.reload();
     }
 
+    function getYoutubeId(url) {
+      if (!url) return null;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
     function playVideoModal(url, name) {
       document.getElementById("video-dialog-title").textContent = `Vídeo Demonstrativo - ${name}`;
       const player = document.getElementById("video-player");
-      player.src = url;
+      const ytPlayer = document.getElementById("youtube-player");
+      
+      const ytId = getYoutubeId(url);
+      if (ytId) {
+        player.style.display = "none";
+        player.src = "";
+        
+        ytPlayer.style.display = "block";
+        ytPlayer.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+      } else {
+        ytPlayer.style.display = "none";
+        ytPlayer.src = "";
+        
+        player.style.display = "block";
+        player.src = url;
+        player.play().catch(e => console.log("Auto-play blocked"));
+      }
+      
       document.getElementById("video-dialog").showModal();
-      player.play().catch(e => console.log("Auto-play blocked"));
     }
 
     function closeVideoModal() {
       const player = document.getElementById("video-player");
+      const ytPlayer = document.getElementById("youtube-player");
+      
       player.pause();
       player.src = "";
+      ytPlayer.src = "";
+      
       document.getElementById("video-dialog").close();
     }
 

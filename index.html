@@ -956,12 +956,16 @@
 
         <div class="form-row-2" style="margin-top: 12px;">
           <div class="form-group">
-            <label for="form-p-image">URL da Foto do Produto</label>
-            <input type="text" id="form-p-image" class="form-control" placeholder="Ex: https://images.unsplash.com/...">
+            <label for="form-p-image-file">Foto do Produto (Upload local)</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="file" id="form-p-image-file" class="form-control" accept="image/*" style="flex-grow: 1;">
+              <img id="form-p-image-preview" src="" alt="Preview" style="width: 38px; height: 38px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: none;">
+            </div>
+            <input type="hidden" id="form-p-image-base64">
           </div>
           <div class="form-group">
-            <label for="form-p-video">URL do Vídeo Demonstrativo</label>
-            <input type="text" id="form-p-video" class="form-control" placeholder="Ex: https://example.com/video.mp4">
+            <label for="form-p-video">Vídeo do Produto (Link do YouTube)</label>
+            <input type="text" id="form-p-video" class="form-control" placeholder="Ex: https://www.youtube.com/watch?v=...">
           </div>
         </div>
       </fieldset>
